@@ -11,6 +11,8 @@ __thread char t_errnobuf[512];
 __thread char t_time[64];
 __thread time_t t_lastSecond;
 
+extern int TimezoneId;
+
 int gettid(){
     return static_cast<int>(::syscall(SYS_gettid));
 }
@@ -100,7 +102,7 @@ void Logger::Impl::formatTime(){
 		t_lastSecond = seconds;
 		struct tm tm_time;
 		gmtime_r(&seconds, &tm_time);
-		int len = snprintf(t_time, sizeof t_time, "%04d%02d%02d %02d:%02d:%02d",tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
+		int len = snprintf(t_time, sizeof t_time, "%04d%02d%02d %02d:%02d:%02d",tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour + TimezoneId, tm_time.tm_min, tm_time.tm_sec);
 		assert(len == 17);
 		(void)len;
 	}

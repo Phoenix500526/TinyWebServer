@@ -5,7 +5,10 @@
 #include <stdio.h>
 using namespace std;
 
+int TimezoneId = 8;
+
 int main(int argc, char* argv[]){
+
 	const char* filename = basename(argv[0]);
 	LogFile log(filename, 1024);
 	Logger::setOutput(bind(&LogFile::append, &log, placeholders::_1,placeholders::_2));

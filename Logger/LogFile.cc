@@ -6,6 +6,7 @@
 #include <assert.h>
 using namespace std;
 
+extern int TimezoneId;
 
 File::File(const char* filename):m_fp(fopen(filename, "ae")), m_WrittenBytes(0){
     assert(m_fp);
@@ -80,7 +81,8 @@ string LogFile::getLogFileName(const string& basename, time_t* now){
     struct tm tm_time;
     *now = time(NULL);
     gmtime_r(now, &tm_time);
-    strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm_time);
+    snprintf(timebuf, sizeof timebuf, ".%04d%02d%02d-%02d%02d%02d.",tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour + TimezoneId, tm_time.tm_min, tm_time.tm_sec);
+    //strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm_time);
     filename += timebuf;
     filename += hostname();
     char pidbuf[32];
