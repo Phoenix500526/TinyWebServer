@@ -33,7 +33,7 @@ public:
     char* current() const{ return m_current;}
     int remainSpace(){ return static_cast<int>(end() - m_current);}
     void reset(){m_current = m_data;}
-    void bezero(){memset(m_data, 0, sizeof m_data);}
+    void bzero(){memset(m_data, 0, sizeof m_data);}
     void add(size_t len){ m_current += len;}
     void append(const char* data, size_t len){
         if(static_cast<size_t>(remainSpace()) >= len){

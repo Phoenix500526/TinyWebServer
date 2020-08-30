@@ -1,7 +1,7 @@
 #include "LogFile.h"
 #include "Logger.h"
 
-
+#include <inttypes.h>
 #include <unistd.h>
 #include <assert.h>
 using namespace std;
@@ -58,10 +58,9 @@ const string hostname(){
     return "unknownhost";
 }
 
-LogFile::LogFile(const string& basename, off_t rollsize, int flushInterval, int checkEveryN)
+LogFile::LogFile(const string& basename, off_t rollsize, int checkEveryN)
     : m_basename(basename),
       m_RollSize(rollsize),
-      m_FlushInterval(flushInterval),
       m_checkEveryN(checkEveryN),
       m_count(0),
       m_StartOfPeriod(0),
@@ -82,7 +81,6 @@ string LogFile::getLogFileName(const string& basename, time_t* now){
     *now = time(NULL);
     gmtime_r(now, &tm_time);
     snprintf(timebuf, sizeof timebuf, ".%04d%02d%02d-%02d%02d%02d.",tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour + TimezoneId, tm_time.tm_min, tm_time.tm_sec);
-    //strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm_time);
     filename += timebuf;
     filename += hostname();
     char pidbuf[32];

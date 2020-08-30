@@ -34,7 +34,6 @@ class LogFile{
 private:
     const std::string m_basename;
     const off_t m_RollSize;       //文件大小达到 m_RollSize 时，创建新文件
-    const int m_FlushInterval;
     const int m_checkEveryN;  //每插入 N 条log 就会检查当前时间是否超过上次 rollFile 的时间
     int m_count;            
     time_t m_StartOfPeriod;
@@ -43,7 +42,7 @@ private:
     const static int m_kRollPerSeconds = 60*60*24;
     
 public:
-    LogFile(const std::string& basename, off_t m_RollSize, int flushInterval = 3, int checkEveryN = 1024);
+    LogFile(const std::string& basename, off_t m_RollSize, int checkEveryN = 1024);
     ~LogFile();
     std::string getLogFileName(const std::string& basename, time_t* now);
     void append(const char* logline, size_t len);
