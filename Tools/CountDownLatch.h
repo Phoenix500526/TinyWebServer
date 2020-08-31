@@ -1,7 +1,7 @@
 #ifndef TINYWEBSERVER_TOOLS_COUNTDOWNLATCH_H
 #define TINYWEBSERVER_TOOLS_COUNTDOWNLATCH_H
 
-#include "../Mutex.h"
+#include "Mutex.h"
 #include <condition_variable>
 
 class CountDownLatch : nocopyable{
