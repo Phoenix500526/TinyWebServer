@@ -57,7 +57,7 @@ void AsyncLogging::threadFunc(){
 			UniqueLock lock(m_mutex);
 			if(m_buffers.empty()){
 				//等待 flushInterval 时间后刷新
-				m_cond.wait_for(lock.getUniqueLock(), std::chrono::seconds(m_flushInterval));	
+				m_cond.wait_for(lock, std::chrono::seconds(m_flushInterval));	
 			}
 			m_buffers.push_back(std::move(m_curBuffer));
 			m_curBuffer = std::move(newBuffer1);

@@ -20,7 +20,7 @@ private:
 	std::atomic<bool> m_running;
 	CountDownLatch m_latch;
 	Mutex m_mutex;
-	std::condition_variable m_cond;
+	Condition m_cond;
 	std::thread m_thread;
 	BufferPtr m_curBuffer GUARDED_BY(m_mutex);
 	BufferPtr m_nxtBuffer GUARDED_BY(m_mutex);

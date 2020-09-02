@@ -2,12 +2,12 @@
 #define TINYWEBSERVER_TOOLS_COUNTDOWNLATCH_H
 
 #include "Mutex.h"
-#include <condition_variable>
+#include "Condition.h"
 
 class CountDownLatch : nocopyable{
 private:
 	mutable Mutex m_mutex;
-	std::condition_variable m_cond;
+	Condition m_cond;
 	int m_count GUARDED_BY(m_mutex);
 public:
 	explicit CountDownLatch(int count):m_mutex(),m_cond(),m_count(count){}	

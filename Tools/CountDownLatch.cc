@@ -3,7 +3,7 @@
 void CountDownLatch::wait(){
 	UniqueLock lck(m_mutex);
 	while(m_count > 0){
-		m_cond.wait(lck.getUniqueLock());
+		m_cond.wait(lck);
 	}
 }
 

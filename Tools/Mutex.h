@@ -1,5 +1,5 @@
-#ifndef TINYWEBSERVER_MUTEX_H
-#define TINYWEBSERVER_MUTEX_H
+#ifndef TINYWEBSERVER_TOOLS_MUTEX_H
+#define TINYWEBSERVER_TOOLS_MUTEX_H
 
 #include <mutex>
 #include <thread>
