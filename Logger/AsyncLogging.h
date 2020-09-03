@@ -2,8 +2,8 @@
 #define TINYWEBSERVER_LOGGER_ASYNCLOGGING_H
 
 #include "LogStream.h"
-#include "../Tools/CountDownLatch.h"
-#include "../Tools/Mutex.h"
+#include "Tools/CountDownLatch.h"
+#include "Tools/Mutex.h"
 #include <thread>
 #include <vector>
 #include <atomic>

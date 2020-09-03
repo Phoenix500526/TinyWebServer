@@ -1,7 +1,7 @@
 #ifndef TINYWEBSERVER_LOGGER_LOGFILE_H
 #define TINYWEBSERVER_LOGGER_LOGFILE_H
 
-#include "../Tools/nocopyable.h"
+#include "Tools/nocopyable.h"
 
 #include <time.h>
 #include <sys/types.h>

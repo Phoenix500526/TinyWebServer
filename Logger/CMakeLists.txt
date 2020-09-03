@@ -14,4 +14,4 @@ set(LOGGER_SRC
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_DIR}/${LOGGER_SRC})
 add_library(Log::lib ALIAS ${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/Tools)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR})

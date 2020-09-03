@@ -1,7 +1,7 @@
 #ifndef TINYWEBSERVER_LOGGER_LOGSTREAM_H
 #define TINYWEBSERVER_LOGGER_LOGSTREAM_H
 
-#include "../Tools/nocopyable.h"
+#include "Tools/nocopyable.h"
 
 #include <string.h>
 #include <string>
