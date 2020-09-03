@@ -4,14 +4,13 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
-#include <time.h>
+#include <chrono>
 
 
 __thread char t_errnobuf[512];
 __thread char t_time[64];
 __thread time_t t_lastSecond;
 
-extern int TimezoneId;
 
 int gettid(){
     return static_cast<int>(::syscall(SYS_gettid));
@@ -81,7 +80,6 @@ Logger::Impl::Impl(LogLevel level, int old_Errno, const SourceFile& file, int li
 	  m_basename(file),
 	  m_line(line),
 	  m_stream(){
-		gettimeofday(&m_time, NULL);
 		formatTime();
 		char tidString[7];
 		snprintf(tidString,sizeof tidString, "%5d ", gettid());
@@ -97,16 +95,22 @@ void Logger::Impl::finish(){
 }
 
 void Logger::Impl::formatTime(){
-	time_t seconds = static_cast<time_t>(m_time.tv_sec);
+	static const int kMicroSecondsPerSecond = 1000 * 1000;
+	std::chrono::high_resolution_clock::time_point now_point = std::chrono::high_resolution_clock::now();
+	std::chrono::microseconds u_sec = std::chrono::duration_cast<std::chrono::microseconds>(now_point.time_since_epoch());
+	std::chrono::seconds sec = std::chrono::duration_cast<std::chrono::seconds>(u_sec);
+	time_t seconds = sec.count();
 	if(seconds != t_lastSecond){
 		t_lastSecond = seconds;
 		struct tm tm_time;
-		gmtime_r(&seconds, &tm_time);
-		int len = snprintf(t_time, sizeof t_time, "%04d%02d%02d %02d:%02d:%02d",tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour + TimezoneId, tm_time.tm_min, tm_time.tm_sec);
+		localtime_r(&seconds, &tm_time);
+		int len = snprintf(t_time, sizeof t_time, "%04d%02d%02d %02d:%02d:%02d",
+			tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, 
+			tm_time.tm_min, tm_time.tm_sec);
 		assert(len == 17);
 		(void)len;
 	}
-	Fmt us(".%06d ", m_time.tv_usec);
+	Fmt us(".%06d ", u_sec.count() % kMicroSecondsPerSecond);
 	assert(8 == us.length());
 	m_stream << T(t_time, 17) << T(us.data(), 8);
 }

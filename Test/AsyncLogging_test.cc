@@ -9,7 +9,7 @@
 #include <sys/resource.h>
 #include <iostream>
 using namespace std;
-int TimezoneId = 8;
+
 off_t kRollSize = 1024 * 1000 * 1000;
 AsyncLogging* g_asyncLog = NULL;
 void asyncOutput(const char* msg, int len)

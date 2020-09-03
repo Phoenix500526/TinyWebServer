@@ -67,7 +67,6 @@ private:
 		LogLevel m_level;
 		SourceFile m_basename;
 		int m_line;
-		struct timeval m_time;
 		LogStream m_stream;
 
 	public:	
