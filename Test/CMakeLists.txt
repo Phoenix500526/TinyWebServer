@@ -28,3 +28,12 @@ add_custom_command(TARGET ConfigUnitTest POST_BUILD
 	copy ${CMAKE_CURRENT_SOURCE_DIR}/Config_unittest.ini $<TARGET_FILE_DIR:ConfigUnitTest>)
 
 add_test(test_all ConfigUnitTest)
+
+# sqlconnectionpool_test
+add_executable(SqlConnectionPool_test SqlConnectionPool_test.cc)
+target_include_directories(SqlConnectionPool_test PUBLIC ${CMAKE_SOURCE_DIR})
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/3rd-party/FindMySQL")    
+find_package(MySQL)
+
+target_link_libraries(SqlConnectionPool_test PRIVATE Threads::Threads Tools::lib ${MYSQL_LIBRARY} Log::lib Pools::lib)
