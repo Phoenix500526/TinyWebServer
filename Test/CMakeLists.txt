@@ -37,3 +37,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/3rd-party/FindMy
 find_package(MySQL)
 
 target_link_libraries(SqlConnectionPool_test PRIVATE Threads::Threads Tools::lib ${MYSQL_LIBRARY} Log::lib Pools::lib)
+
+# threadpool_test
+add_executable(ThreadPool_test ThreadPool_test.cc)
+target_include_directories(ThreadPool_test PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(ThreadPool_test PRIVATE Threads::Threads)
