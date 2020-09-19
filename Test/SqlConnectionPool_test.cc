@@ -8,7 +8,7 @@
 
 using namespace std;
 
-connection_pool* connPool = connection_pool::GetInstance();
+ConnectionPool* connPool = ConnectionPool::GetInstance();
 unordered_map<string, string> users;
 vector<thread> thread_pool;
 

@@ -8,7 +8,7 @@
 #include "Tools/Condition.h"
 #include "Logger/Logger.h"
 
-class connection_pool
+class ConnectionPool
 {
 public:
 	MYSQL *GetConnection();				 //获取数据库连接
@@ -17,13 +17,13 @@ public:
 	void DestroyPool();					 //销毁所有连接
 
 	//单例模式
-	static connection_pool *GetInstance();
+	static ConnectionPool *GetInstance();
 
 	void init(std::string url, std::string User, std::string PassWord, std::string DataBaseName, int Port, int MaxConn); 
 
 private:
-	connection_pool();
-	~connection_pool();
+	ConnectionPool();
+	~ConnectionPool();
 
 	int m_MaxConn;  //最大连接数
 	int m_CurConn;  //当前已使用的连接数
@@ -43,7 +43,7 @@ public:
 class connectionRAII{
 
 public:
-	connectionRAII(MYSQL **con, connection_pool *connPool):conRAII(connPool->GetConnection()), poolRAII(connPool){
+	connectionRAII(MYSQL **con, ConnectionPool *connPool):conRAII(connPool->GetConnection()), poolRAII(connPool){
 		*con = conRAII;
 	}
 	~connectionRAII(){
@@ -52,7 +52,7 @@ public:
 	
 private:
 	MYSQL *conRAII;
-	connection_pool *poolRAII;
+	ConnectionPool *poolRAII;
 };
 
 //防止用到匿名对象，导致刚申请链接马上被释放。

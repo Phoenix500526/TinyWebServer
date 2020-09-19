@@ -2,20 +2,20 @@
 
 using namespace std;
 
-connection_pool::connection_pool()
+ConnectionPool::ConnectionPool()
 {
 	m_CurConn = 0;
 	m_FreeConn = 0;
 }
 
-connection_pool *connection_pool::GetInstance()
+ConnectionPool *ConnectionPool::GetInstance()
 {
-	static connection_pool connPool;
+	static ConnectionPool connPool;
 	return &connPool;
 }
 
 //构造初始化
-void connection_pool::init(string url, string User, string PassWord, string DBName, int Port, int MaxConn)
+void ConnectionPool::init(string url, string User, string PassWord, string DBName, int Port, int MaxConn)
 {
 	m_url = url;
 	m_Port = Port;
@@ -47,7 +47,7 @@ void connection_pool::init(string url, string User, string PassWord, string DBNa
 
 
 //当有请求时，从数据库连接池中返回一个可用连接，更新使用和空闲连接数
-MYSQL *connection_pool::GetConnection()
+MYSQL *ConnectionPool::GetConnection()
 {
 	MYSQL *con = NULL;
 
@@ -66,7 +66,7 @@ MYSQL *connection_pool::GetConnection()
 }
 
 //释放当前使用的连接【即将线程归还给线程池】
-bool connection_pool::ReleaseConnection(MYSQL *con)
+bool ConnectionPool::ReleaseConnection(MYSQL *con)
 {
 	if (NULL == con)
 		return false;
@@ -79,7 +79,7 @@ bool connection_pool::ReleaseConnection(MYSQL *con)
 }
 
 //销毁数据库连接池
-void connection_pool::DestroyPool()
+void ConnectionPool::DestroyPool()
 {
 	UniqueLock lck(m_mtx);
 	if (connList.size() > 0)
@@ -97,12 +97,12 @@ void connection_pool::DestroyPool()
 }
 
 //当前空闲的连接数
-int connection_pool::GetFreeConn()
+int ConnectionPool::GetFreeConn()
 {
 	return this->m_FreeConn;
 }
 
-connection_pool::~connection_pool()
+ConnectionPool::~ConnectionPool()
 {
 	DestroyPool();
 }
