@@ -42,6 +42,8 @@ private:
 public:
     static const size_t kCheapPrepend = 8;
     static const size_t kInitialSize = 1024;
+    //仅供 Mock 测试匹配参数使用，只声明不定义
+    friend bool operator==(const Buffer& lhs, const Buffer& rhs);
 	explicit Buffer(int initialsize = kInitialSize + kCheapPrepend)
         :m_buffer(initialsize), m_writerIndex(kCheapPrepend),m_readerIndex(kCheapPrepend){
         assert(ReadableBytes() == 0);

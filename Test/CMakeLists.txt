@@ -52,3 +52,15 @@ target_link_libraries(BufferUnitTest
     GTest::Main
 )
 add_test(NAME BufferUnitTest COMMAND BufferUnitTest)
+
+# Http_Unittest
+add_executable(HttpUnitTest HttpConn_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpConn.cc)
+target_include_directories(HttpUnitTest PUBLIC ${CMAKE_SOURCE_DIR} ${gmock_SOURCE_DIR}/include)
+target_link_libraries(HttpUnitTest
+    GTest::GTest
+    GTest::Main
+    Log::lib
+    Tools::lib
+    GMock::GMock
+)
+add_test(NAME HttpUnitTest COMMAND HttpUnitTest)
