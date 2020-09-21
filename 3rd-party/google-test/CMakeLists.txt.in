@@ -9,9 +9,12 @@ include(ExternalProject)
 # commit after 9469fb687d040b60c8749b7617fee4e77c7f6409
 # Note: This is after the release of v1.8
 ExternalProject_Add(googletest
-  URL               https://github.com/google/googletest/archive/bfc0ffc8a698072c794ae7299db9cb6866f4c0bc.tar.gz
   SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/googletest-src"
   BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/googletest-build"
+  GIT_REPOSITORY
+    https://github.com/google/googletest.git
+  GIT_TAG			
+  	release-1.10.0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND     ""
   INSTALL_COMMAND   ""
