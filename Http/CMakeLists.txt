@@ -3,6 +3,7 @@ Project(Http CXX)
 set(HTTP_SRC
     HttpConn.cc
     HttpRequest.cc
+    HttpResponse.cc
 )
 
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_DIR}/${HTTP_SRC})
