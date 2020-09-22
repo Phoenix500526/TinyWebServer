@@ -45,12 +45,16 @@ public:
 class MockHttpResponse : public HttpResponseBase{
 public:
     MockHttpResponse(){}
-    MOCK_METHOD4(Init, void(const std::string&, std::string&, bool, int));
+    void Init(const std::string& srcDir, std::string& path, bool IsKeepAlive = false, int code = -1){
+        Init_Impl(srcDir, path, IsKeepAlive, code);
+    }
+    MOCK_METHOD4(Init_Impl, void(const std::string&, std::string&, bool, int));
     MOCK_METHOD0(UnmapFile, void());
     MOCK_METHOD1(MakeResponse, void(Buffer& buff));
     MOCK_METHOD0(File, char*());
     MOCK_CONST_METHOD0(FileLen, size_t());
-
+    MOCK_METHOD2(ErrorContent, void(Buffer&, std::string));
+    MOCK_CONST_METHOD0(Code, int());
 };
 
 
@@ -102,7 +106,7 @@ TEST(HttpConnTest, HttpProcessSuccessTest){
         .Times(1)
         .WillOnce(Return(true));
 
-    EXPECT_CALL(*response_, Init(HttpConn::srcDir, path_res, true, 200))
+    EXPECT_CALL(*response_, Init_Impl(HttpConn::srcDir, path_res, true, 200))
         .Times(1);
 
     EXPECT_CALL(*request_, Parse(readBuf))
@@ -141,7 +145,7 @@ TEST(HttpConnTest, HttpProcessFailedTest){
         .Times(1)
         .WillOnce(Return(false));
 
-    EXPECT_CALL(*response_, Init(HttpConn::srcDir, path_res, false, 400))
+    EXPECT_CALL(*response_, Init_Impl(HttpConn::srcDir, path_res, false, 400))
         .Times(1);
 
     EXPECT_CALL(*response_, MakeResponse(writeBuf))
