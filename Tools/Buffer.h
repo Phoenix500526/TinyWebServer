@@ -33,12 +33,7 @@ private:
     const char* Begin() const{
         return &*m_buffer.begin();
     }
-    char* BeginWrite(){
-        return Begin() + m_writerIndex;
-    }
-    const char* BeginWrite() const{
-        return Begin() + m_writerIndex;
-    }
+    
 public:
     static const size_t kCheapPrepend = 8;
     static const size_t kInitialSize = 1024;
@@ -51,6 +46,14 @@ public:
         assert(PrepenableBytes() == kCheapPrepend);
     }
 	~Buffer() = default;
+
+
+    char* BeginWrite(){
+        return Begin() + m_writerIndex;
+    }
+    const char* BeginWrite() const{
+        return Begin() + m_writerIndex;
+    }
 
     size_t WritableBytes() const{
         return m_buffer.size() - m_writerIndex;

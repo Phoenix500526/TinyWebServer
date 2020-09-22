@@ -53,14 +53,25 @@ target_link_libraries(BufferUnitTest
 )
 add_test(NAME BufferUnitTest COMMAND BufferUnitTest)
 
-# Http_Unittest
-add_executable(HttpUnitTest HttpConn_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpConn.cc)
-target_include_directories(HttpUnitTest PUBLIC ${CMAKE_SOURCE_DIR} ${gmock_SOURCE_DIR}/include)
-target_link_libraries(HttpUnitTest
+# HttpConn_Unittest
+add_executable(HttpConnUnitTest HttpConn_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpConn.cc)
+target_include_directories(HttpConnUnitTest PUBLIC ${CMAKE_SOURCE_DIR} ${gmock_SOURCE_DIR}/include)
+target_link_libraries(HttpConnUnitTest
     GTest::GTest
     GTest::Main
-    Log::lib
-    Tools::lib
     GMock::GMock
+    Http::lib
+    ${MYSQL_LIBRARY}
 )
-add_test(NAME HttpUnitTest COMMAND HttpUnitTest)
+add_test(NAME HttpConnUnitTest COMMAND HttpConnUnitTest)
+
+#HttpRequest_Unittest
+add_executable(HttpRequestUnitTest HttpRequest_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpRequest.cc)
+target_include_directories(HttpRequestUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(HttpRequestUnitTest
+    GTest::GTest
+    GTest::Main
+    Http::lib
+    ${MYSQL_LIBRARY}
+)
+add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)

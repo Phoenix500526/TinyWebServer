@@ -36,6 +36,10 @@ public:
     MOCK_CONST_METHOD0(IsKeepAlive, bool());
     MOCK_CONST_METHOD0(path, std::string());
     MOCK_METHOD0(path, std::string&());
+    MOCK_CONST_METHOD0(method, std::string());
+    MOCK_CONST_METHOD0(version, std::string());
+    MOCK_CONST_METHOD1(GetPost, std::string(const std::string&));
+    MOCK_CONST_METHOD1(GetPost, std::string(const char*));
 };
 
 class MockHttpResponse : public HttpResponseBase{
