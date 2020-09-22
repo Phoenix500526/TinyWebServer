@@ -34,10 +34,7 @@ add_test(NAME ConfigUnitTest COMMAND ConfigUnitTest)
 add_executable(SqlConnectionPool_test SqlConnectionPool_test.cc)
 target_include_directories(SqlConnectionPool_test PUBLIC ${CMAKE_SOURCE_DIR})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/3rd-party/FindMySQL")    
-find_package(MySQL)
-
-target_link_libraries(SqlConnectionPool_test PRIVATE Threads::Threads Tools::lib ${MYSQL_LIBRARY} Log::lib Pools::lib)
+target_link_libraries(SqlConnectionPool_test PRIVATE Threads::Threads Tools::lib Log::lib Pools::lib)
 
 # threadpool_test
 add_executable(ThreadPool_test ThreadPool_test.cc)
@@ -61,7 +58,6 @@ target_link_libraries(HttpConnUnitTest
     GTest::Main
     GMock::GMock
     Http::lib
-    ${MYSQL_LIBRARY}
 )
 add_test(NAME HttpConnUnitTest COMMAND HttpConnUnitTest)
 
@@ -72,6 +68,5 @@ target_link_libraries(HttpRequestUnitTest
     GTest::GTest
     GTest::Main
     Http::lib
-    ${MYSQL_LIBRARY}
 )
 add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
