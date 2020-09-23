@@ -9,6 +9,8 @@ const unordered_set<string> HttpRequest::DEFAULT_HTML{
 const unordered_map<string, int> HttpRequest::DEFAULT_HTML_TAG {
             {"/register.html", 0}, {"/login.html", 1},  };
 
+unordered_map<string, string> HttpRequest::USERTABLE;
+
 void HttpRequest::Init(){
     m_method = m_path = m_version = m_body = "";
     m_state = PARSE_STATE::REQUEST_LINE;
@@ -16,7 +18,6 @@ void HttpRequest::Init(){
     m_post.clear();
 }
 
-//TODO
 bool HttpRequest::Parse(Buffer& buff){
     const char CRLF[] = "\r\n";
     if(buff.ReadableBytes() <= 0){
@@ -39,7 +40,6 @@ bool HttpRequest::Parse(Buffer& buff){
                 }
                 break;
             case PARSE_STATE::BODY:
-                //暂未测试，留到重构 DAO 后进行 mock 测试
                 ParseBody(line);
                 break;
             default:
@@ -102,9 +102,19 @@ void HttpRequest::ParsePost(){
         if(Path_Tag != DEFAULT_HTML_TAG.end()){
             int tag = Path_Tag->second;
             LOG_DEBUG << "Tag[" << tag << "] ";
-            if(tag == 1 || tag == 0){
-                bool login = (tag == 1);
-                if(UserVerify(m_post["username"], m_post["password"], login)){
+            if(USERTABLE.empty()){
+                if(!GetUserTableFromDB()){
+                    LOG_ERROR << "Cannot Get USERTABLE from Database";
+                }
+            }
+            if(tag == 1){
+                if(Login(m_post["username"], m_post["password"]) == HttpRequest::LOGIN_STATUS::LOGIN_SUCCESS){
+                    m_path = "/welcome.html";
+                }else{
+                    m_path = "/error.html";
+                }
+            }else{
+                if(Register(m_post["username"], m_post["password"])){
                     m_path = "/welcome.html";
                 }else{
                     m_path = "/error.html";
@@ -203,23 +213,52 @@ string HttpRequest::GetPost(const char* key) const{
     return "";
 }
 
+HttpRequest::LOGIN_STATUS HttpRequest::Login(const std::string& name, const std::string& pwd){
+    if(name.empty())
+        return LOGIN_STATUS::EMPTY_USERNAME;
+    if(pwd.empty())
+        return LOGIN_STATUS::EMPTY_PASSWD;
+    auto iter = USERTABLE.find(name);
+    if(iter == USERTABLE.end()){
+        return LOGIN_STATUS::NO_SUCH_USER;
+    }
+    if(iter->second != pwd)
+        return LOGIN_STATUS::WRONG_PASSWD;
+    return LOGIN_STATUS::LOGIN_SUCCESS;
+}
 
-bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bool Login){
-    if(name == "" || pwd == "") { return false; }
-    LOG_INFO << "Verify name:" <<  name.c_str() << " , pwd:" << pwd.c_str();
+
+
+bool HttpRequest::Register(const std::string& name, const std::string& pwd){
+    if(name.empty() || pwd.empty())
+        return false;
+    if(USERTABLE.find(name) != USERTABLE.end())
+        return false;
     MYSQL* sql;
     connectionRAII sqlRAII(&sql,  ConnectionPool::GetInstance());
     assert(sql);
-    
-    bool flag = false;
-    unsigned int j = 0;
+
     char order[256] = { 0 };
+    snprintf(order, 256,"INSERT INTO user(username, passwd) VALUES('%s','%s')", name.c_str(), pwd.c_str());
     MYSQL_FIELD *fields = nullptr;
     MYSQL_RES *res = nullptr;
-    
-    if(!Login) { flag = true; }
-    /* 查询用户及密码 */
-    snprintf(order, 256, "SELECT username, password FROM user WHERE username='%s' LIMIT 1", name.c_str());
+
+    if(mysql_query(sql, order)) { 
+        LOG_INFO << "Insert error!";
+        return false; 
+    }
+
+    USERTABLE[name] = pwd;
+    return true;
+}
+
+
+bool HttpRequest::GetUserTableFromDB(){
+    MYSQL* sql;
+    connectionRAII sqlRAII(&sql,  ConnectionPool::GetInstance());
+    assert(sql);
+    MYSQL_RES* res = nullptr;
+    char order[256] = "SELECT username, passwd FROM user";
     LOG_DEBUG << order;
 
     if(mysql_query(sql, order)) { 
@@ -227,40 +266,10 @@ bool HttpRequest::UserVerify(const std::string& name, const std::string& pwd, bo
         return false; 
     }
     res = mysql_store_result(sql);
-    j = mysql_num_fields(res);
-    fields = mysql_fetch_fields(res);
-
-    while(MYSQL_ROW row = mysql_fetch_row(res)) {
-        LOG_DEBUG << "MYSQL ROW: " << row[0] << " " << row[1];
-        string password(row[1]);
-        /* 注册行为 且 用户名未被使用*/
-        if(Login) {
-            if(pwd == password) { flag = true; }
-            else {
-                flag = false;
-                LOG_DEBUG << "pwd error!";
-            }
-        } 
-        else { 
-            flag = false; 
-            LOG_DEBUG << "user used!";
+    while(MYSQL_ROW row = mysql_fetch_row(res)){
+        if(USERTABLE.find(row[0]) == USERTABLE.end()){
+            USERTABLE[row[0]] = row[1];
         }
-    }
-    mysql_free_result(res);
-
-    /* 注册行为 且 用户名未被使用*/
-    if(!Login && flag == true) {
-        LOG_DEBUG << "regirster!";
-        bzero(order, 256);
-        snprintf(order, 256,"INSERT INTO user(username, password) VALUES('%s','%s')", name.c_str(), pwd.c_str());
-        LOG_DEBUG <<  order;
-        if(mysql_query(sql, order)) { 
-            LOG_DEBUG << "Insert error!";
-            flag = false; 
-        }
-        flag = true;
-    }
-    ConnectionPool::GetInstance()->ReleaseConnection(sql);
-    LOG_DEBUG << "UserVerify success!!";
-    return flag;
+    }    
+    return true;
 }

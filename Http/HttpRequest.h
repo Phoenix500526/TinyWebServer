@@ -46,6 +46,16 @@ public:
         INTERNAL_ERROR,
         CLOSED_CONNECTION,
     };    
+
+    enum class LOGIN_STATUS
+    {
+        LOGIN_SUCCESS,
+        NO_SUCH_USER,
+        WRONG_PASSWD,
+        EMPTY_USERNAME,
+        EMPTY_PASSWD,
+    };
+
 protected:
     bool ParseRequestLine(const std::string& line);
     void ParseHeader(const std::string& line);
@@ -54,9 +64,12 @@ protected:
     void ParsePost();
     void ParseFromUrlencoded();
 
-    static bool UserVerify(const std::string& name, const std::string& pwd, bool Login);
     static const std::unordered_set<std::string> DEFAULT_HTML;
     static const std::unordered_map<std::string, int> DEFAULT_HTML_TAG;
+    static std::unordered_map<std::string, std::string> USERTABLE;
+    LOGIN_STATUS Login(const std::string& name, const std::string& pwd);
+    bool Register(const std::string& name, const std::string& pwd);
+    static bool GetUserTableFromDB();
     static int ConverHex(char ch);
 
     PARSE_STATE m_state;

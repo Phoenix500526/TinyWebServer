@@ -78,6 +78,14 @@ public:
     bool IsKeepAlive(){
         return HttpRequest::IsKeepAlive();
     }
+
+    static void AddUser(const std::string& name, const std::string& passwd){
+        HttpRequest::USERTABLE[name] = passwd;
+    }
+
+    HttpRequest::LOGIN_STATUS Login(const std::string& name, const std::string& passwd){
+        return HttpRequest::Login(name, passwd);
+    }
 };
 
 
@@ -183,4 +191,22 @@ TEST(HttpRequest_Unittest, ParseTest){
     EXPECT_EQ(request_2.IsKeepAlive(), true);
     EXPECT_EQ(request_2.GetHeaderFirst("Host"), true);
     EXPECT_EQ(request_2.GetHeaderSecond("Host"), std::string("google.hk"));
+}
+
+TEST(HttpRequest_Unittest, LoginTest){
+    std::string root("root");
+    std::string emptyPasswd;
+    std::string emptyUser;
+    std::string rootPasswd("123123");
+    std::string wrongUser("roo");
+    std::string wrongPasswd("123");
+
+    HttpRequest_Derived::AddUser(root, rootPasswd);
+    HttpRequest_Derived request;
+    EXPECT_EQ(request.Login(root, rootPasswd), HttpRequest::LOGIN_STATUS::LOGIN_SUCCESS);
+    EXPECT_EQ(request.Login(root, emptyPasswd), HttpRequest::LOGIN_STATUS::EMPTY_PASSWD);
+    EXPECT_EQ(request.Login(emptyUser, rootPasswd), HttpRequest::LOGIN_STATUS::EMPTY_USERNAME);
+    EXPECT_EQ(request.Login(root, wrongPasswd), HttpRequest::LOGIN_STATUS::WRONG_PASSWD);
+    EXPECT_EQ(request.Login(wrongUser, rootPasswd), HttpRequest::LOGIN_STATUS::NO_SUCH_USER);
+
 }

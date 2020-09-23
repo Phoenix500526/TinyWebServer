@@ -71,6 +71,15 @@ target_link_libraries(HttpRequestUnitTest
 )
 add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
 
+#HttpRequestDB_test
+add_executable(HttpRequestDBTest HttpRequestDB_test.cc)
+target_include_directories(HttpRequestDBTest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(HttpRequestDBTest
+    Http::lib
+    Pools::lib
+)
+
+
 #HttpResponse_Unittest
 add_executable(HttpResponseUnitTest HttpResponse_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpResponse.cc)
 target_include_directories(HttpResponseUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
