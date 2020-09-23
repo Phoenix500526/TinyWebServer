@@ -83,6 +83,7 @@ public:
     void RetrieveUntil(const char* end);
     void RetrieveAll();
     std::string RetrieveAsString(size_t len);
+    std::string RetrieveAllAsString();
 
     void Append(const char* data, size_t len);
     void Append(const std::string& data);

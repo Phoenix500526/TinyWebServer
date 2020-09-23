@@ -47,6 +47,10 @@ string Buffer::RetrieveAsString(size_t len){
     return result;
 }
 
+string Buffer::RetrieveAllAsString(){
+    return RetrieveAsString(ReadableBytes());
+}
+
 void Buffer::Append(const char* data, size_t len){
     EnsureWritable(len);
     copy(data, data + len, BeginWrite());

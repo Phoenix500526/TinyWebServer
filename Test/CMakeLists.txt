@@ -70,3 +70,13 @@ target_link_libraries(HttpRequestUnitTest
     Http::lib
 )
 add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
+
+#HttpResponse_Unittest
+add_executable(HttpResponseUnitTest HttpResponse_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpResponse.cc)
+target_include_directories(HttpResponseUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(HttpResponseUnitTest
+    GTest::GTest
+    GTest::Main
+    Http::lib
+)
+add_test(NAME HttpResponseUnitTest COMMAND HttpResponseUnitTest)
