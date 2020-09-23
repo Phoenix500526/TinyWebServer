@@ -29,6 +29,8 @@ public:
 
 
 class HttpResponse:public HttpResponseBase{   
+private:
+    void Init_Impl(const std::string& srcDir, std::string& path, bool isKeepAlive, int code) override;    
 public:
     HttpResponse();
     ~HttpResponse();
@@ -44,8 +46,6 @@ public:
     int Code() const override;
 
 protected:
-    void Init_Impl(const std::string& srcDir, std::string& path, bool isKeepAlive, int code) override;   
-
     void AddStateLine(Buffer &buff);
     void AddHeader(Buffer &buff);
     void AddContent(Buffer &buff);
