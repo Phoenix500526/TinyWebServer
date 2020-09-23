@@ -51,7 +51,7 @@ target_link_libraries(BufferUnitTest
 add_test(NAME BufferUnitTest COMMAND BufferUnitTest)
 
 # HttpConn_Unittest
-add_executable(HttpConnUnitTest HttpConn_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpConn.cc)
+add_executable(HttpConnUnitTest HttpConn_Unittest.cc )
 target_include_directories(HttpConnUnitTest PUBLIC ${CMAKE_SOURCE_DIR} ${gmock_SOURCE_DIR}/include)
 target_link_libraries(HttpConnUnitTest
     GTest::GTest
@@ -62,7 +62,7 @@ target_link_libraries(HttpConnUnitTest
 add_test(NAME HttpConnUnitTest COMMAND HttpConnUnitTest)
 
 #HttpRequest_Unittest
-add_executable(HttpRequestUnitTest HttpRequest_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpRequest.cc)
+add_executable(HttpRequestUnitTest HttpRequest_Unittest.cc)
 target_include_directories(HttpRequestUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(HttpRequestUnitTest
     GTest::GTest
@@ -81,7 +81,7 @@ target_link_libraries(HttpRequestDBTest
 
 
 #HttpResponse_Unittest
-add_executable(HttpResponseUnitTest HttpResponse_Unittest.cc ${CMAKE_SOURCE_DIR}/Http/HttpResponse.cc)
+add_executable(HttpResponseUnitTest HttpResponse_Unittest.cc )
 target_include_directories(HttpResponseUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(HttpResponseUnitTest
     GTest::GTest
@@ -89,3 +89,13 @@ target_link_libraries(HttpResponseUnitTest
     Http::lib
 )
 add_test(NAME HttpResponseUnitTest COMMAND HttpResponseUnitTest)
+
+#HttpResponseFile_test
+add_executable(HttpResponseFileTest HttpResponseFile_test.cc )
+target_include_directories(HttpResponseFileTest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(HttpResponseFileTest
+    Http::lib
+)
+add_custom_command(TARGET HttpResponseFileTest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E 
+    copy ${CMAKE_CURRENT_SOURCE_DIR}/HttpResponseFile_test.html $<TARGET_FILE_DIR:HttpResponseFileTest>)
