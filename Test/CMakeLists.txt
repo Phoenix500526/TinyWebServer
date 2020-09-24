@@ -99,3 +99,13 @@ target_link_libraries(HttpResponseFileTest
 add_custom_command(TARGET HttpResponseFileTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E 
     copy ${CMAKE_CURRENT_SOURCE_DIR}/HttpResponseFile_test.html $<TARGET_FILE_DIR:HttpResponseFileTest>)
+
+#TimerHeap_Unittest
+add_executable(TimerHeapUnittest TimerHeap_Unittest.cc)
+target_include_directories(TimerHeapUnittest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(TimerHeapUnittest 
+    GTest::GTest
+    GTest::Main
+    Timer::lib
+)
+add_test(NAME TimerHeapUnittest COMMAND TimerHeapUnittest)
