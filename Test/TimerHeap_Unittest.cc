@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "Timer/TimerHeap.h"
-#include <iostream>
 
 using namespace std;
 
@@ -34,6 +33,9 @@ public:
     }
     void AdjustTimer(int timer_id, int timeout){
         TimerHeap::AdjustTimer(timer_id, timeout);
+    }
+    void Tick(){
+        TimerHeap::Tick();
     }
 };
 
@@ -82,7 +84,7 @@ TEST_F(TimerHeap_Unittest, InitTest){
     EXPECT_EQ(t5 < t3, true);
 }
 
-//swap(t4,t5)
+//Swap(t4,t5)
 TEST_F(TimerHeap_Unittest, SwapTest){
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
@@ -173,8 +175,8 @@ TEST_F(TimerHeap_Unittest, DelTimerTest){
     EXPECT_EQ(heap[2].expires, t2.expires);
     EXPECT_EQ(ref[3], 3);
     EXPECT_EQ(heap[3].expires, t3.expires);
-    
 }
+
 
 TEST_F(TimerHeap_Unittest, AddTimerTest){
     unordered_map<int, size_t>& ref = Heap_.getRef();
@@ -191,7 +193,7 @@ TEST_F(TimerHeap_Unittest, AddTimerTest){
     EXPECT_EQ(ref[6], 0);
 }
 
-
+//AdjustTimer(4)
 TEST_F(TimerHeap_Unittest, AdjustTimerTest){
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
