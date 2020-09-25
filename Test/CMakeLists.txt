@@ -109,3 +109,11 @@ target_link_libraries(TimerHeapUnittest
     Timer::lib
 )
 add_test(NAME TimerHeapUnittest COMMAND TimerHeapUnittest)
+
+#Epoller_Echotest
+add_executable(EpollerEchotest Epoller_Echotest.cc)
+target_include_directories(EpollerEchotest PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(EpollerEchotest
+    Log::lib
+    Net::lib
+)
