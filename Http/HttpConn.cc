@@ -2,6 +2,10 @@
 
 using namespace std;
 
+const char* HttpConn::srcDir;
+std::atomic<int> HttpConn::userCnt;
+bool HttpConn::isET;
+
 HttpConn::HttpConn(){
 	m_fd = -1;
 	m_addr = {0};
@@ -96,9 +100,9 @@ ssize_t HttpConn::Write(int* saveErrno){
 void HttpConn::Process(){
     if(m_request->Parse(m_readBuff)){
         LOG_DEBUG << "request path is " << m_request->path();
-        m_response->Init(srcDir, m_request->path(), m_request->IsKeepAlive(), 200);
+        m_response->Init(HttpConn::srcDir, m_request->path(), m_request->IsKeepAlive(), 200);
     }else{
-        m_response->Init(srcDir, m_request->path(), false, 400);
+        m_response->Init(HttpConn::srcDir, m_request->path(), false, 400);
     }
     m_response->MakeResponse(m_writeBuff);
     //响应 http 头部

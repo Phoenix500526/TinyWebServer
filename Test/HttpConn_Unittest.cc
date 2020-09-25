@@ -11,10 +11,6 @@ using ::testing::ReturnRef;
 using ::testing::AtLeast;
 
 
-const char* HttpConn::srcDir = "resources/";
-bool HttpConn::isET = false;
-std::atomic<int> HttpConn::userCnt = {0};
-
 bool operator==(const sockaddr_in& lhs, const sockaddr_in& rhs ){
     return lhs.sin_port == rhs.sin_port && !strcmp(inet_ntoa(lhs.sin_addr),inet_ntoa(rhs.sin_addr));
 }
@@ -57,24 +53,35 @@ public:
     MOCK_CONST_METHOD0(Code, int());
 };
 
+class HttpConnTest:public ::testing::Test
+{
+protected:
+    HttpConnTest(){
+        HttpConn::srcDir = "resources/";
+        HttpConn::isET = false;
+        HttpConn::userCnt = {0};
+    }
+    ~HttpConnTest(){}
+};
 
-TEST(HttpConnTest, HttpInitAndClose){
+
+TEST_F(HttpConnTest, HttpInit){
     std::shared_ptr<MockHttpResponse> response_ = std::make_shared<MockHttpResponse>();
     {
-        HttpConn http;
         std::shared_ptr<MockHttpRequest> request_ = std::make_shared<MockHttpRequest>();
-
+        HttpConn http;
+        
         http.SetRequest(request_);
         http.SetResponse(response_);
-    
+        
         ASSERT_EQ(http.GetFd(), -1) << "http's fd is " << http.GetFd();
         struct sockaddr_in res{0};
         ASSERT_EQ(http.GetAddr(), res) << "http's Addr is " << http.GetIP() << " : " << http.GetPort();
-    
+        
         struct sockaddr_in addr{1,1};
         EXPECT_CALL(*request_, Init())
             .Times(1);
-    
+        
         http.Init(10, addr);
         EXPECT_EQ(http.GetFd(), 10);
         EXPECT_EQ(http.GetAddr(), addr);
@@ -86,7 +93,7 @@ TEST(HttpConnTest, HttpInitAndClose){
     EXPECT_EQ(HttpConn::userCnt.load(), 0);
 }
 
-TEST(HttpConnTest, HttpProcessSuccessTest){
+TEST_F(HttpConnTest, HttpProcessSuccessTest){
     std::shared_ptr<MockHttpResponse> response_ = std::make_shared<MockHttpResponse>();
     std::shared_ptr<MockHttpRequest> request_ = std::make_shared<MockHttpRequest>();
     HttpConn http;
@@ -125,7 +132,7 @@ TEST(HttpConnTest, HttpProcessSuccessTest){
             .Times(1);
 }
 
-TEST(HttpConnTest, HttpProcessFailedTest){
+TEST_F(HttpConnTest, HttpProcessFailedTest){
     std::shared_ptr<MockHttpResponse> response_ = std::make_shared<MockHttpResponse>();
     std::shared_ptr<MockHttpRequest> request_ = std::make_shared<MockHttpRequest>();
     HttpConn http;
