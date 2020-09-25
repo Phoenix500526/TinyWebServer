@@ -1,9 +1,5 @@
 project(Unit_Test)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-
-find_package(Threads REQUIRED)
-
 # AsyncLogging_test
 add_executable(AsyncLogging_test AsyncLogging_test.cc)
 
