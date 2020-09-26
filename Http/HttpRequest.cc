@@ -240,8 +240,6 @@ bool HttpRequest::Register(const std::string& name, const std::string& pwd){
 
     char order[256] = { 0 };
     snprintf(order, 256,"INSERT INTO user(username, passwd) VALUES('%s','%s')", name.c_str(), pwd.c_str());
-    MYSQL_FIELD *fields = nullptr;
-    MYSQL_RES *res = nullptr;
 
     if(mysql_query(sql, order)) { 
         LOG_INFO << "Insert error!";

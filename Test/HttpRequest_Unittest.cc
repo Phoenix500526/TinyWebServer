@@ -75,7 +75,7 @@ public:
         return HttpRequest::ConverHex(c);
     }
     
-    bool IsKeepAlive(){
+    bool IsKeepAlive() const{
         return HttpRequest::IsKeepAlive();
     }
 

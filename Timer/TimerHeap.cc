@@ -68,7 +68,7 @@ void TimerHeap::AddTimer(int timer_id, int timeout, TimeoutCallBack const& cb){
 
 void TimerHeap::DelTimer(size_t i){
     assert(i >= 0 && i < m_heap.size());
-    int leaf = m_heap.size() - 1;
+    size_t leaf = m_heap.size() - 1;
     //若为叶子节点则直接删除，非叶子节点则先交换，然后删除，之后再调整。
     if(i == leaf){
         m_ref.erase(m_heap.back().timer_id);
@@ -120,7 +120,7 @@ void TimerHeap::Pop(){
 
 int TimerHeap::GetNextTick(){
     Tick();
-    size_t res = -1;
+    int res = -1;
     if(!m_heap.empty()) {
         res = std::chrono::duration_cast<MS>(m_heap.front().expires - Clock::now()).count();
         if(res < 0) { res = 0; }

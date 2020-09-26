@@ -60,7 +60,7 @@ public:
 	sockaddr_in GetAddr() const;
 
 	void Process();
-	int ToWriteBytes() { 
+	size_t ToWriteBytes() { 
         return m_iov[0].iov_len + m_iov[1].iov_len; 
     }
 

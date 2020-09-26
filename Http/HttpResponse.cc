@@ -38,9 +38,10 @@ const unordered_map<int, string> HttpResponse::ERROR_PAGE = {
 };
 
 HttpResponse::HttpResponse()
-    :m_code(-1), m_path(""), 
-     m_srcDir(""), 
+    :m_code(-1),
      m_isKeepAlive(false),
+     m_path(""), 
+     m_srcDir(""), 
      m_mmFile(nullptr),
      m_mmFileStat({0}){}
 
@@ -109,7 +110,7 @@ const string HttpResponse::checkStatus(){
         m_code = 400;
         status = CODE_STATUS.find(m_code)->second;
     }
-    return std::move(status);
+    return status;
 }
 
 void HttpResponse::AddStateLine(Buffer &buff){

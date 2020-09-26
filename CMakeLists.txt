@@ -7,6 +7,19 @@ set(CMAKE_CXX_STANDARD 11)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+add_compile_options(
+ -g
+ # -DVALGRIND
+ -DCHECK_PTHREAD_RETURN_VALUE
+ -D_FILE_OFFSET_BITS=64
+ -Wall
+ -Wno-unused-parameter
+ -Woverloaded-virtual
+ -Wpointer-arith
+ -Wwrite-strings
+ -std=c++11
+ )
+
 
 add_subdirectory(3rd-party/google-test)
 enable_testing()

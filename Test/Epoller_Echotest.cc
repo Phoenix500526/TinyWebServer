@@ -24,7 +24,7 @@ int setnonblocking(int fd) {
 int main() {
     int listen_fd;
     int conn_fd;
-    int nread;
+    ssize_t nread, nwrite;
     int cur_fds;     // 当前已经存在的fd数量
     int wait_fds;    
     int i;
@@ -78,7 +78,7 @@ int main() {
     }
 
     // 7. 创建epoll
-    if (epoller.AddFd(listen_fd, EPOLLIN | EPOLLET) < 0) {
+    if (!epoller.AddFd(listen_fd, EPOLLIN | EPOLLET)) {
         printf("epoll_ctl error : %d\n", errno);
         exit(EXIT_FAILURE);
     }
@@ -97,7 +97,7 @@ int main() {
                     exit(EXIT_FAILURE);
                 }
                 printf("server get from client port : %d\n", cliaddr.sin_port);
-                if (epoller.AddFd(conn_fd, EPOLLIN | EPOLLET) < 0) {
+                if (!epoller.AddFd(conn_fd, EPOLLIN | EPOLLET)) {
                     printf("epoll error : %d\n", errno);
                     exit(EXIT_FAILURE);
                 }
@@ -116,7 +116,8 @@ int main() {
             buf[nread] = 'a';
             buf[nread + 1] = '\0';
             // 回写
-            write(epoller.GetEventFd(i), buf, nread);
+            nwrite = write(epoller.GetEventFd(i), buf, nread);
+            assert(nread == nwrite);
         }
     }
 

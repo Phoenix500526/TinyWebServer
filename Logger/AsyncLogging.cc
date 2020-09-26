@@ -24,7 +24,7 @@ AsyncLogging::AsyncLogging(const string& basename, off_t rollSize, int flushInte
 
 void AsyncLogging::append(const char* logline, size_t len){
 	UniqueLock lck(m_mutex);
-	if(m_curBuffer->remainSpace() > len){
+	if(static_cast<size_t>(m_curBuffer->remainSpace()) > len){
 		m_curBuffer->append(logline, len);
 	}else{
 		m_buffers.push_back(std::move(m_curBuffer));

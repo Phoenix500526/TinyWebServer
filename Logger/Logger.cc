@@ -40,8 +40,8 @@ Logger::LogLevel initLogLevel(){
 	}
 }
 
-void defaultOutput(const char* msg, int len){
-	int n = fwrite(msg, 1, len, stdout);
+void defaultOutput(const char* msg, size_t len){
+	size_t n = fwrite(msg, 1, len, stdout);
 	assert(n == len);
 	(void)n;
 }
@@ -57,8 +57,8 @@ Logger::FlushFunc g_Flush = defaultFlush;
 class T{
 public:	
 	const char* m_data;
-	const unsigned m_len;
-	T(const char* str, const unsigned len)
+	const size_t m_len;
+	T(const char* str, const size_t len)
 		:m_data(str), m_len(len){
 			assert(m_len == strlen(m_data));
 	}

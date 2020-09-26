@@ -59,7 +59,7 @@ protected:
     HttpConnTest(){
         HttpConn::srcDir = "resources/";
         HttpConn::isET = false;
-        HttpConn::userCnt = {0};
+        HttpConn::userCnt = 0;
     }
     ~HttpConnTest(){}
 };
@@ -75,10 +75,10 @@ TEST_F(HttpConnTest, HttpInit){
         http.SetResponse(response_);
         
         ASSERT_EQ(http.GetFd(), -1) << "http's fd is " << http.GetFd();
-        struct sockaddr_in res{0};
+        struct sockaddr_in res{};
         ASSERT_EQ(http.GetAddr(), res) << "http's Addr is " << http.GetIP() << " : " << http.GetPort();
         
-        struct sockaddr_in addr{1,1};
+        struct sockaddr_in addr = {1,1};
         EXPECT_CALL(*request_, Init())
             .Times(1);
         

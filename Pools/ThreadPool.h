@@ -17,7 +17,7 @@ private:
 	mutable Mutex m_mutex;
 	Condition m_notEmpty GUARDED_BY(m_mutex);
 	Condition m_notFull GUARDED_BY(m_mutex);
-	int m_maxSize;
+	size_t m_maxSize;
 	std::atomic<bool> m_needStop;
 private:
 	template <typename F>

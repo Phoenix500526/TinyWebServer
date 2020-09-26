@@ -34,7 +34,7 @@ private:
 
 public:
 	std::string m_url;			 //主机地址
-	std::string m_Port;		 //数据库端口号
+	int m_Port;		 //数据库端口号
 	std::string m_User;		 //登陆数据库用户名
 	std::string m_PassWord;	 //登陆数据库密码
 	std::string m_DatabaseName; //使用数据库名
