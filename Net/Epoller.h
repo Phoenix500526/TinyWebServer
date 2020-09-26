@@ -20,6 +20,9 @@ public:
     virtual bool DelFd(int fd) = 0;
 
     virtual int Wait_Impl(int timeoutMs) = 0;
+    int Wait(int timeoutMs = -1){
+        return Wait_Impl(timeoutMs);
+    }
 
     virtual int GetEventFd(size_t i) const = 0;
 
