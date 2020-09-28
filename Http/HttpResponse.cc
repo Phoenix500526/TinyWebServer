@@ -122,12 +122,12 @@ void HttpResponse::AddStateLine(Buffer &buff){
 void HttpResponse::AddHeader(Buffer &buff){
     buff.Append("Connection: ");
     if(m_isKeepAlive){
-        buff.Append("Keep-Alive\r\n");
-        buff.Append("Keep-Alive: timeout=10000\r\n");
+        buff.Append("keep-alive\r\n");
+        buff.Append("keep-alive: max=6, timeout=120\r\n");
     }else{
-        buff.Append("Close\r\n");
+        buff.Append("close\r\n");
     }
-    buff.Append("Content-Type: " + GetFileType() + "\r\n");
+    buff.Append("Content-type: " + GetFileType() + "\r\n");
 }
 
 
@@ -147,7 +147,7 @@ void HttpResponse::AddContent(Buffer &buff){
     }
     m_mmFile = static_cast<char*>(mmRet);
     close(srcFd);
-    buff.Append("Content-Length: " + to_string(m_mmFileStat.st_size) + "\r\n\r\n");
+    buff.Append("Content-length: " + to_string(m_mmFileStat.st_size) + "\r\n\r\n");
 }
 
 void HttpResponse::ErrorHtml(){

@@ -13,10 +13,9 @@ WebServer::WebServer(int port, int timeoutMS, int sqlPort,
          m_connPool(ConnectionPool::GetInstance()), m_threadPool(ThreadPool::GetInstance())
          {
 			assert(port < 65535 && port > 1024);
-			//m_srcDir = get_current_dir_name();
             m_srcDir = getcwd(nullptr, 256);
 			assert(m_srcDir);
-            strcat(m_srcDir, "/resources/");
+            strcat(m_srcDir, "/resources");
 			HttpConn::userCnt = 0;
 			HttpConn::srcDir = m_srcDir;
 			m_connPool->init("localhost", sqlUser, sqlPwd, dbName, sqlPort, connPoolNum);

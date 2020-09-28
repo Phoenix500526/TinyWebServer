@@ -26,7 +26,6 @@ bool HttpRequest::Parse(Buffer& buff){
     while(buff.ReadableBytes() && m_state != PARSE_STATE::FINISH){
         const char* lineEnd = search(buff.Peek(), const_cast<const char*>(buff.BeginWrite()), CRLF, CRLF + 2);
         string line(buff.Peek(), lineEnd);
-        LOG_INFO << line;
         switch(m_state){
             case PARSE_STATE::REQUEST_LINE:
                 if(!ParseRequestLine(line))
@@ -48,6 +47,7 @@ bool HttpRequest::Parse(Buffer& buff){
         if(lineEnd == buff.BeginWrite()) { break; }
         buff.RetrieveUntil(lineEnd + 2);
     }
+    LOG_DEBUG << "[" << m_method <<  "], [" << m_path << "], [" << m_version << "]";
     return true;
 }
 
@@ -95,7 +95,7 @@ void HttpRequest::ParsePath(){
 }
 
 void HttpRequest::ParsePost(){
-    auto Content_Type = m_header.find("Content-Type");
+    auto Content_Type = m_header.find("Content-type");
     if(m_method == "POST" && Content_Type != m_header.end() && Content_Type->second == string("application/x-www-form-urlencoded")){
         ParseFromUrlencoded();
         auto Path_Tag = DEFAULT_HTML_TAG.find(m_path);
@@ -178,7 +178,7 @@ int HttpRequest::ConverHex(char c){
 bool HttpRequest::IsKeepAlive() const{
     auto Connection = m_header.find("Connection");
     if(m_version == "1.1" && Connection != m_header.end()){
-        return Connection->second == "Keep-Alive";
+        return Connection->second == "keep-alive";
     }
     return false;
 }
