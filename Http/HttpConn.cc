@@ -33,7 +33,9 @@ void HttpConn::Init(int fd, const sockaddr_in& addr){
     ++userCnt;
     m_fd = fd;
     m_addr = addr;
-    Reset();
+    m_readBuff.RetrieveAll();
+    m_writeBuff.RetrieveAll();
+    m_isClose = false;
     LOG_INFO << "Client[" << m_fd << "](" << GetIP() << ':' << GetPort() << ") in, UserCnt:" << static_cast<int>(userCnt);
 }
 
@@ -52,13 +54,6 @@ int HttpConn::GetFd() const{
 struct sockaddr_in HttpConn::GetAddr() const{
 	return m_addr;
 };
-
-void HttpConn::Reset(){
-    m_readBuff.RetrieveAll();
-    m_writeBuff.RetrieveAll();
-    m_isClose = false;
-    m_request->Init();
-}
 
 ssize_t HttpConn::Read(int* saveErrno){
     ssize_t len = -1;
@@ -97,7 +92,10 @@ ssize_t HttpConn::Write(int* saveErrno){
     return len;
 }
 
-void HttpConn::Process(){
+bool HttpConn::Process(){
+    m_request->Init();
+    if(m_readBuff.ReadableBytes() <= 0)
+        return false;
     if(m_request->Parse(m_readBuff)){
         LOG_DEBUG << "request path is " << m_request->path();
         m_response->Init(HttpConn::srcDir, m_request->path(), m_request->IsKeepAlive(), 200);
@@ -116,4 +114,5 @@ void HttpConn::Process(){
         m_iovCnt = 2;
     }
     LOG_DEBUG << "filesize: " << m_response->FileLen() << ", " << m_iovCnt << " to " << ToWriteBytes();
+    return true;
 }

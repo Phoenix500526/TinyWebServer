@@ -41,7 +41,6 @@ public:
 	~HttpConn();
 
 	void Init(int fd, const sockaddr_in& addr);
-	void Reset();
 	void Close();
 
     void SetRequest(std::shared_ptr<HttpRequestBase> request_ = std::make_shared<HttpRequest>()){
@@ -59,7 +58,7 @@ public:
 	const char* GetIP() const;
 	sockaddr_in GetAddr() const;
 
-	void Process();
+	bool Process();
 	size_t ToWriteBytes() { 
         return m_iov[0].iov_len + m_iov[1].iov_len; 
     }

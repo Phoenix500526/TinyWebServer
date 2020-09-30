@@ -53,6 +53,8 @@ HttpResponse::~HttpResponse(){
 
 void HttpResponse::Init_Impl(const std::string& srcDir, std::string& path, bool isKeepAlive, int code){
     //assert(srcDir.empty() && path.empty());
+    if(m_mmFile)
+        UnmapFile();
     m_srcDir = srcDir;
     m_path = path;
     m_isKeepAlive = isKeepAlive;

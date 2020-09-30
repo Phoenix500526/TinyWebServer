@@ -57,7 +57,7 @@ private:
     
     void ExtentTime(HttpConn* client);
     
-    
+    void OnProcess(HttpConn* client);
 
 public:
 	WebServer(int port, int timeoutMS, int sqlPort, 

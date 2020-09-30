@@ -95,8 +95,7 @@ void HttpRequest::ParsePath(){
 }
 
 void HttpRequest::ParsePost(){
-    auto Content_Type = m_header.find("Content-type");
-    if(m_method == "POST" && Content_Type != m_header.end() && Content_Type->second == string("application/x-www-form-urlencoded")){
+    if(m_method == "POST" && m_header["Content-Type"] == "application/x-www-form-urlencoded"){
         ParseFromUrlencoded();
         auto Path_Tag = DEFAULT_HTML_TAG.find(m_path);
         if(Path_Tag != DEFAULT_HTML_TAG.end()){

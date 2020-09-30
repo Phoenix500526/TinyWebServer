@@ -100,7 +100,7 @@ void WebServer::DealListen(){
             break;
         }
         AddClient(fd, addr);
-    }while(m_listenFd & EPOLLET);
+    }while(m_listenEvent & EPOLLET);
 }
 
 void WebServer::SendError(int fd, const char* mesg){
@@ -146,10 +146,15 @@ void WebServer::OnRead(HttpConn* client){
         CloseConn(client);
         return;
     }
-    client->Process();
-    m_epoller->ModFd(client->GetFd(), m_connEvent | EPOLLOUT);
+    OnProcess(client);
 }
 
+void WebServer::OnProcess(HttpConn* client){
+    if(client->Process())
+        m_epoller->ModFd(client->GetFd(), m_connEvent | EPOLLOUT);
+    else
+        m_epoller->ModFd(client->GetFd(), m_connEvent | EPOLLIN);
+}
 
 
 void WebServer::DealWrite(HttpConn* client){
@@ -165,9 +170,7 @@ void WebServer::OnWrite(HttpConn* client){
     if(client->ToWriteBytes() == 0){
         /* 传输完成 */
         if(client->IsKeepAlive()) {
-            LOG_DEBUG << "keepAlive!";
-            client->Reset();
-            m_epoller->ModFd(client->GetFd(), m_connEvent | EPOLLIN);
+            OnProcess(client);
             return;
         }
     }else if(ret < 0){
