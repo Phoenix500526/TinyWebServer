@@ -2,6 +2,7 @@
 #define TINYWEBSERVER_LOGGER_LOGGER_H
 
 #include "LogStream.h"
+#include "AsyncLogging.h"
 
 #include <sys/time.h>
 #include <sys/syscall.h>

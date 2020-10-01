@@ -1,8 +1,29 @@
 #include "Net/WebServer.h"
 #include <unistd.h>
+#include <sys/resource.h>
+
 using namespace std;
 
-int main(void){
+AsyncLogging* g_asyncLog = NULL;
+void asyncOutput(const char* msg, int len)
+{
+  g_asyncLog->append(msg, len);
+}
+
+int main(int argc, char* argv[]){
+    {
+        // set max virtual memory to 2GB.
+        size_t kOneGB = 1000*1024*1024;
+        rlimit rl = { 2*kOneGB, 2*kOneGB };
+        setrlimit(RLIMIT_AS, &rl);
+    }
+    char name[256] = { '\0' };
+    strncpy(name, argv[0], sizeof name - 1);
+    AsyncLogging log(basename(name));
+    log.start();
+    g_asyncLog = &log;
+    Logger::setOutput(asyncOutput);
+
     int port, sqlPort, ConnectionNum, threadNum;
     string sqlUser, sqlPwd, DBName;
 

@@ -27,7 +27,7 @@ private:
 	BufferPtrVec m_buffers GUARDED_BY(m_mutex);
 	void threadFunc();
 public:
-	AsyncLogging(std::string const& basename, off_t rollSize, int flushInterval = 3);
+	AsyncLogging(std::string const& basename, off_t rollSize = 1024 * 1000 * 1000, int flushInterval = 3);
 	~AsyncLogging(){
 		if(m_running){
 			stop();
