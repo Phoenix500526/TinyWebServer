@@ -134,12 +134,12 @@ TEST(HttpResponseUnittest, AddHeaderTest){
     Buffer headerBuf;
 
     response.AddHeader(headerBuf);
-    std::string keepAliveHeader = "Connection: Keep-Alive\r\nKeep-Alive: timeout=10000\r\nContent-Type: text/html\r\n";
+    std::string keepAliveHeader = "Connection: keep-alive\r\nkeep-alive: max=6, timeout=120\r\nContent-type: text/html\r\n";
     EXPECT_EQ(headerBuf.RetrieveAllAsString(), keepAliveHeader);
 
     response.SetIsKeepAlive(false);
     response.AddHeader(headerBuf);
-    std::string closeHeader = "Connection: Close\r\nContent-Type: text/html\r\n";
+    std::string closeHeader = "Connection: close\r\nContent-type: text/html\r\n";
     EXPECT_EQ(headerBuf.RetrieveAllAsString(), closeHeader);
 }
 

@@ -18,7 +18,7 @@
 
 
 class HttpConn{
-private:
+protected:
 	int m_fd;
     struct  sockaddr_in m_addr;
 

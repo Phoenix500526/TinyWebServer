@@ -53,6 +53,36 @@ public:
     MOCK_CONST_METHOD0(Code, int());
 };
 
+class HttpConnDerived: public HttpConn
+{
+public:
+    HttpConnDerived() = default;
+    ~HttpConnDerived() = default;
+    void AppendRead(const std::string& str){
+        HttpConn::m_readBuff.Append(str);
+    }
+
+    void AppendWrite(const std::string& str){
+        HttpConn::m_writeBuff.Append(str);
+    }
+
+    Buffer& GetReadBuff(){
+        return  HttpConn::m_readBuff;
+    }
+
+    Buffer& GetWriteBuff(){
+        return HttpConn::m_writeBuff;
+    }
+
+    void SetResponse(std::shared_ptr<MockHttpResponse> response_){
+        HttpConn::m_response = response_;
+    }
+
+    void SetRequest(std::shared_ptr<MockHttpRequest> request_){
+        HttpConn::m_request = request_;
+    }
+};
+
 class HttpConnTest:public ::testing::Test
 {
 protected:
@@ -79,8 +109,6 @@ TEST_F(HttpConnTest, HttpInit){
         ASSERT_EQ(http.GetAddr(), res) << "http's Addr is " << http.GetIP() << " : " << http.GetPort();
         
         struct sockaddr_in addr = {1,1};
-        EXPECT_CALL(*request_, Init())
-            .Times(1);
         
         http.Init(10, addr);
         EXPECT_EQ(http.GetFd(), 10);
@@ -96,18 +124,23 @@ TEST_F(HttpConnTest, HttpInit){
 TEST_F(HttpConnTest, HttpProcessSuccessTest){
     std::shared_ptr<MockHttpResponse> response_ = std::make_shared<MockHttpResponse>();
     std::shared_ptr<MockHttpRequest> request_ = std::make_shared<MockHttpRequest>();
-    HttpConn http;
+    HttpConnDerived http;
     http.SetResponse(response_);
     http.SetRequest(request_);
+    http.AppendRead("Hello World");
+    http.AppendWrite("Hello World");
 
-    Buffer readBuf;
-    Buffer writeBuf;
+    Buffer& m_readBuff = http.GetReadBuff();
+    Buffer& m_writeBuff = http.GetWriteBuff();
 
     std::string path_res("resources");
 
-    EXPECT_CALL(*request_, path())
-        .Times(AtLeast(1))
-        .WillOnce(ReturnRef(path_res));
+    EXPECT_CALL(*request_, Init())
+            .Times(1);
+
+    EXPECT_CALL(*request_, Parse(m_readBuff))
+        .Times(1)
+        .WillOnce(Return(true));
 
     EXPECT_CALL(*request_, IsKeepAlive())
         .Times(1)
@@ -115,12 +148,13 @@ TEST_F(HttpConnTest, HttpProcessSuccessTest){
 
     EXPECT_CALL(*response_, Init_Impl(HttpConn::srcDir, path_res, true, 200))
         .Times(1);
+    
 
-    EXPECT_CALL(*request_, Parse(readBuf))
-        .Times(1)
-        .WillOnce(Return(true));
+    EXPECT_CALL(*request_, path())
+        .Times(AtLeast(1))
+        .WillOnce(ReturnRef(path_res));
 
-    EXPECT_CALL(*response_, MakeResponse(writeBuf))
+    EXPECT_CALL(*response_, MakeResponse(m_writeBuff))
         .Times(1);
 
     EXPECT_CALL(*response_, FileLen())
@@ -139,30 +173,5 @@ TEST_F(HttpConnTest, HttpProcessFailedTest){
     http.SetResponse(response_);
     http.SetRequest(request_);
 
-    Buffer readBuf;
-    Buffer writeBuf;
-
-    std::string path_res("resources");
-
-    EXPECT_CALL(*request_, path())
-        .Times(AtLeast(1))
-        .WillOnce(ReturnRef(path_res));
-
-    EXPECT_CALL(*request_, Parse(readBuf))
-        .Times(1)
-        .WillOnce(Return(false));
-
-    EXPECT_CALL(*response_, Init_Impl(HttpConn::srcDir, path_res, false, 400))
-        .Times(1);
-
-    EXPECT_CALL(*response_, MakeResponse(writeBuf))
-        .Times(1);
-
-    EXPECT_CALL(*response_, FileLen())
-        .Times(1)
-        .WillOnce(Return(0));
-
-    http.Process();
-    EXPECT_CALL(*response_, UnmapFile())
-            .Times(1);
+    EXPECT_EQ(http.Process(), false);
 }

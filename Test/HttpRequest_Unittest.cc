@@ -184,7 +184,7 @@ TEST(HttpRequest_Unittest, ParseTest){
 
     HttpRequest_Derived request_2;
     Buffer testBuf_2;
-    std::string PackageHeader("Host: google.hk\r\nConnection: Keep-Alive\r\n");
+    std::string PackageHeader("Host: google.hk\r\nConnection: keep-alive\r\n");
     testBuf_2.Append(PackageReqLine);
     testBuf_2.Append(PackageHeader);
     EXPECT_EQ(request_2.Parse(testBuf_2), true);
