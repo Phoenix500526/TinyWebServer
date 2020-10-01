@@ -7,19 +7,24 @@
 #include "Tools/Mutex.h"
 #include "Tools/Condition.h"
 #include "Logger/Logger.h"
+#include "Pools/DAO.h"
+
+using DAOPtr = std::unique_ptr<DAO>;
 
 class ConnectionPool
 {
 public:
-	MYSQL *GetConnection();				 //获取数据库连接
-	bool ReleaseConnection(MYSQL *conn); //释放连接
-	int GetFreeConn();					 //获取连接
-	void DestroyPool();					 //销毁所有连接
+	DAOPtr GetConnection();					//获取数据库连接
+	bool ReleaseConnection(DAOPtr& conn); 	//释放连接
+	int GetFreeConn();					 	//获取连接
+	void DestroyPool();					 	//销毁所有连接
 
 	//单例模式
 	static ConnectionPool *GetInstance();
 
-	void init(std::string url, std::string User, std::string PassWord, std::string DataBaseName, int Port, int MaxConn); 
+	void init(std::string const& DBType, std::string const& url, 
+			std::string const& User, std::string const& PassWord, 
+			std::string const& DataBaseName, int Port, int MaxConn); 
 
 private:
 	ConnectionPool();
@@ -30,29 +35,35 @@ private:
 	int m_FreeConn; //当前空闲的连接数
 	Mutex m_mtx;
 	Condition m_cond;
-	std::list<MYSQL *> connList; //连接池
+	std::list<DAOPtr> connList;
 
 public:
-	std::string m_url;			 //主机地址
-	int m_Port;		 //数据库端口号
-	std::string m_User;		 //登陆数据库用户名
-	std::string m_PassWord;	 //登陆数据库密码
+	std::string m_url;			//主机地址
+	int m_Port;		 			//数据库端口号
+	std::string m_User;		 	//登陆数据库用户名
+	std::string m_PassWord;	 	//登陆数据库密码
 	std::string m_DatabaseName; //使用数据库名
 };
 
 class connectionRAII{
-
 public:
-	connectionRAII(MYSQL **con, ConnectionPool *connPool):conRAII(connPool->GetConnection()), poolRAII(connPool){
-		*con = conRAII;
-	}
+	connectionRAII(ConnectionPool *connPool):poolRAII(connPool), connRAII(connPool->GetConnection()){}
 	~connectionRAII(){
-		poolRAII->ReleaseConnection(conRAII);
+		poolRAII->ReleaseConnection(connRAII);
 	}
-	
+	bool Insert(std::string const& name, std::string const& pwd){
+		return connRAII->Insert(name, pwd);
+	}
+	bool Select(std::unordered_map<std::string, std::string>& table){
+		return connRAII->Select(table);
+	}
+	bool IsValid() const{
+		return connRAII != nullptr;
+	}
 private:
-	MYSQL *conRAII;
 	ConnectionPool *poolRAII;
+	DAOPtr connRAII;
+	
 };
 
 //防止用到匿名对象，导致刚申请链接马上被释放。

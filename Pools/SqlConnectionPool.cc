@@ -2,6 +2,16 @@
 
 using namespace std;
 
+DAOPtr DAOFactory(std::string const& DBType, std::string const& url, 
+        std::string const& User, std::string const& PassWord,
+        std::string const& DBName, int Port){
+    DAOPtr obj(nullptr);
+    if(DBType == "MYSQL"){
+        obj.reset(new MYSQLDAO(url, User, PassWord, DBName, Port)); 
+    }
+    return obj;
+}
+
 ConnectionPool::ConnectionPool()
 {
 	m_CurConn = 0;
@@ -15,50 +25,36 @@ ConnectionPool *ConnectionPool::GetInstance()
 }
 
 //构造初始化
-void ConnectionPool::init(string url, string User, string PassWord, string DBName, int Port, int MaxConn)
+void ConnectionPool::init(string const& DBType, string const& url, 
+		string const& User, string const& PassWord, string const& DBName, 
+		int DBPort, int MaxConn)
 {
 	m_url = url;
-	m_Port = Port;
+	m_Port = DBPort;
 	m_User = User;
 	m_PassWord = PassWord;
 	m_DatabaseName = DBName;
 
 	for (int i = 0; i < MaxConn; i++)
 	{
-		MYSQL *con = NULL;
-		con = mysql_init(con);
-
-		if (con == NULL)
-		{
-			LOG_FATAL << "MySQL Init Error";
-		}
-		con = mysql_real_connect(con, url.c_str(), User.c_str(), PassWord.c_str(), DBName.c_str(), Port, NULL, 0);
-
-		if (con == NULL)
-		{
-			LOG_FATAL << "MySQL Get Real Connection Error";
-		}
-		connList.push_back(con);
+		connList.push_back(DAOFactory(DBType, url, User, PassWord, DBName, DBPort));
 		++m_FreeConn;
 	}
 
 	m_MaxConn = m_FreeConn;
 }
 
-
 //当有请求时，从数据库连接池中返回一个可用连接，更新使用和空闲连接数
-MYSQL *ConnectionPool::GetConnection()
+DAOPtr ConnectionPool::GetConnection()
 {
-	MYSQL *con = NULL;
-
-	if (0 == connList.size())
-		return NULL;
+	if (connList.empty())
+		return nullptr;
 	UniqueLock lck(m_mtx);
 	while(m_FreeConn <= 0){
 		m_cond.wait(lck);
 	}
 	assert(m_FreeConn > 0);
-	con = connList.front();
+	DAOPtr con = std::move(connList.front());
 	connList.pop_front();
 	--m_FreeConn;
 	++m_CurConn;
@@ -66,12 +62,12 @@ MYSQL *ConnectionPool::GetConnection()
 }
 
 //释放当前使用的连接【即将线程归还给线程池】
-bool ConnectionPool::ReleaseConnection(MYSQL *con)
+bool ConnectionPool::ReleaseConnection(DAOPtr& con)
 {
-	if (NULL == con)
+	if (nullptr == con)
 		return false;
 	UniqueLock lck(m_mtx);
-	connList.push_back(con);
+	connList.push_back(std::move(con));
 	++m_FreeConn;
 	--m_CurConn;
 	m_cond.notify_one();
@@ -82,18 +78,7 @@ bool ConnectionPool::ReleaseConnection(MYSQL *con)
 void ConnectionPool::DestroyPool()
 {
 	UniqueLock lck(m_mtx);
-	if (connList.size() > 0)
-	{
-		list<MYSQL *>::iterator it;
-		for (it = connList.begin(); it != connList.end(); ++it)
-		{
-			MYSQL *con = *it;
-			mysql_close(con);
-		}
-		m_CurConn = 0;
-		m_FreeConn = 0;
-		connList.clear();
-	}
+	connList.clear();
 }
 
 //当前空闲的连接数

@@ -25,13 +25,6 @@ add_custom_command(TARGET ConfigUnitTest POST_BUILD
 
 add_test(NAME ConfigUnitTest COMMAND ConfigUnitTest)
 
-
-# sqlconnectionpool_test
-add_executable(SqlConnectionPool_test SqlConnectionPool_test.cc)
-target_include_directories(SqlConnectionPool_test PUBLIC ${CMAKE_SOURCE_DIR})
-
-target_link_libraries(SqlConnectionPool_test PRIVATE Threads::Threads Tools::lib Log::lib Pools::lib)
-
 # threadpool_test
 add_executable(ThreadPool_test ThreadPool_test.cc)
 target_include_directories(ThreadPool_test PUBLIC ${CMAKE_SOURCE_DIR})
@@ -66,14 +59,6 @@ target_link_libraries(HttpRequestUnitTest
     Http::lib
 )
 add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
-
-#HttpRequestDB_test
-add_executable(HttpRequestDBTest HttpRequestDB_test.cc)
-target_include_directories(HttpRequestDBTest PUBLIC ${CMAKE_SOURCE_DIR})
-target_link_libraries(HttpRequestDBTest
-    Http::lib
-    Pools::lib
-)
 
 
 #HttpResponse_Unittest

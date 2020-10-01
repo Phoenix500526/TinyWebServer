@@ -232,40 +232,18 @@ bool HttpRequest::Register(const std::string& name, const std::string& pwd){
         return false;
     if(USERTABLE.find(name) != USERTABLE.end())
         return false;
-    MYSQL* sql;
-    connectionRAII sqlRAII(&sql,  ConnectionPool::GetInstance());
-    assert(sql);
-
-    char order[256] = { 0 };
-    snprintf(order, 256,"INSERT INTO user(username, passwd) VALUES('%s','%s')", name.c_str(), pwd.c_str());
-
-    if(mysql_query(sql, order)) { 
-        LOG_INFO << "Insert error!";
-        return false; 
+    connectionRAII DBObj(ConnectionPool::GetInstance());
+    assert(DBObj.IsValid());
+    if(!DBObj.Insert(name, pwd)){
+        return false;
     }
-
     USERTABLE[name] = pwd;
     return true;
 }
 
 
 bool HttpRequest::GetUserTableFromDB(){
-    MYSQL* sql;
-    connectionRAII sqlRAII(&sql,  ConnectionPool::GetInstance());
-    assert(sql);
-    MYSQL_RES* res = nullptr;
-    char order[256] = "SELECT username, passwd FROM user";
-    LOG_DEBUG << order;
-
-    if(mysql_query(sql, order)) { 
-        mysql_free_result(res);
-        return false; 
-    }
-    res = mysql_store_result(sql);
-    while(MYSQL_ROW row = mysql_fetch_row(res)){
-        if(USERTABLE.find(row[0]) == USERTABLE.end()){
-            USERTABLE[row[0]] = row[1];
-        }
-    }    
-    return true;
+    connectionRAII DBObj(ConnectionPool::GetInstance());
+    assert(DBObj.IsValid());
+    return DBObj.Select(USERTABLE);
 }

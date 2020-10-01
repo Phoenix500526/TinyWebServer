@@ -60,7 +60,7 @@ private:
     void OnProcess(HttpConn* client);
 
 public:
-	WebServer(int port, int timeoutMS, int sqlPort, 
+	WebServer(const std::string& DBType, int port, int timeoutMS, int sqlPort, 
         const std::string& sqlUser, const std::string& sqlPwd, 
         const std::string& dbName, int connPoolNum, int threadNum);
 	~WebServer();

@@ -5,7 +5,7 @@ using namespace std;
 ConnectionPool* connPool = ConnectionPool::GetInstance();
 ThreadPool* threadPool = ThreadPool::GetInstance();
 
-WebServer::WebServer(int port, int timeoutMS, int sqlPort, 
+WebServer::WebServer(const std::string& DBType, int port, int timeoutMS, int sqlPort, 
         const std::string& sqlUser, const std::string& sqlPwd, 
         const std::string& dbName, int connPoolNum, int threadNum)
 		:m_port(port), m_timeoutMS(timeoutMS), 
@@ -18,7 +18,7 @@ WebServer::WebServer(int port, int timeoutMS, int sqlPort,
             strcat(m_srcDir, "/resources");
 			HttpConn::userCnt = 0;
 			HttpConn::srcDir = m_srcDir;
-			m_connPool->init("localhost", sqlUser, sqlPwd, dbName, sqlPort, connPoolNum);
+			m_connPool->init(DBType, "localhost", sqlUser, sqlPwd, dbName, sqlPort, connPoolNum);
 			m_threadPool->start(threadNum);
             m_listenEvent = (EPOLLRDHUP | EPOLLET);
             m_connEvent = (EPOLLONESHOT | EPOLLRDHUP | EPOLLET);

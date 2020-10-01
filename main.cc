@@ -25,10 +25,11 @@ int main(int argc, char* argv[]){
     Logger::setOutput(asyncOutput);
 
     int port, sqlPort, ConnectionNum, threadNum;
-    string sqlUser, sqlPwd, DBName;
+    string sqlUser, sqlPwd, DBName, DBType;
 
     try{
         Config Settings("./config.ini");
+        Settings.Read("DBType", DBType);
         Settings.Read("port",port);
         Settings.Read("sqlPort",sqlPort);
         Settings.Read("sqlUser",sqlUser);
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]){
         cerr << "Cannot Find the Keyword:" << e.what() << endl;
         exit(1);
     }
-    WebServer server(port, 5000, sqlPort, sqlUser, sqlPwd,DBName, ConnectionNum, threadNum );
+    WebServer server(DBType, port, 5000, sqlPort, sqlUser, sqlPwd,DBName, ConnectionNum, threadNum );
     server.Start();
     return 0;
 }
