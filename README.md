@@ -11,6 +11,7 @@
 * Net: 包含 WebServer 和 Poller 
 整个 TinyWebServer 利用 IO 复用技术及线程池实现了高并发的 Reactor 模型，采用 cmake 进行构建，开发的过程当中采用了良好的 OO 设计，符合 TDD 流程，使用 googletest 测试框架进行了单元测试，Mock 测试以及对应模块的功能测试。最终程序经 webbench 测试可实现上万并发
 
+
 ## 源码树及描述信息
 ```shell
 .
@@ -131,4 +132,4 @@ INSERT INTO user(username, passwd) VALUES('name', 'password');
 ```
 
 ## 致谢
-Linux高性能服务器编程，游双著.
+https://github.com/markparticle/WebServer.git  [借用了其中的 html resource 资源及部分代码]
