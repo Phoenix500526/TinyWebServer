@@ -45,8 +45,14 @@ public:
 	}
 	void stop(){
 		m_needStop.store(true);
-		m_notFull.notify_all();
-		m_notEmpty.notify_all();
+		{
+			UniqueLock lck(m_mutex);
+			m_notFull.notify_all();
+		}
+		{
+			UniqueLock lck(m_mutex);
+			m_notEmpty.notify_all();
+		}
 	}
 	void put(T&& x){
 		Add(std::forward<T>(x));

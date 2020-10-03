@@ -11,13 +11,6 @@
 * Net: 包含 WebServer 和 Poller 
 整个 TinyWebServer 利用 IO 复用技术及线程池实现了高并发的 Reactor 模型，采用 cmake 进行构建，开发的过程当中采用了良好的 OO 设计，符合 TDD 流程，使用 googletest 测试框架进行了单元测试，Mock 测试以及对应模块的功能测试。最终程序经 webbench 测试可实现上万并发
 
-## 环境要求
-* Ubuntu 16.04.2 LTS
-* C++ 11
-* MySql 
-* clang version 3.8.0-2ubuntu4 或 gcc version 5.4.0 20160609 
-
-
 ## 源码树及描述信息
 ```shell
 .
@@ -101,15 +94,25 @@
     └── nocopyable.h
 ```
 
+## 环境要求
+* Ubuntu 16.04.2 LTS
+* C++ 11
+* MySql 
+* clang version 3.8.0-2ubuntu4 或 gcc version 5.4.0 20160609 
+
 ## 编译方法
 ```shell
 $ mkdir build
 $ cd build/
-$ cmake .. -DCMAKE_CXX_COMPILER=clang++3.8
+# 编译 Debug 版本
+$ cmake .. -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_BUILD_TYPE=Release
+# 编译 Release 版本
+$ cmake .. -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_BUILD_TYPE=Release
 # 可先对代码进行单元测试
 $ make test
 $ make install -j4
 ```
+注：初次编译时需要下载 googletest 源码，由于某些你懂的原因下载速度比较慢。**后期如果需要重新编译，可以保留 build 目录下的 3rd-party，以避免反复下载 googletest 源码**
 
 ## 环境配置
 ```shell

@@ -7,8 +7,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options(-Wthread-safety )
+endif()
+
+
 add_compile_options(
- -g
  # -DVALGRIND
  -DCHECK_PTHREAD_RETURN_VALUE
  -D_FILE_OFFSET_BITS=64
@@ -17,7 +22,6 @@ add_compile_options(
  -Woverloaded-virtual
  -Wpointer-arith
  -Wwrite-strings
- -std=c++11
  )
 
 
