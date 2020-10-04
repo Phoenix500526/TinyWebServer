@@ -43,16 +43,10 @@ public:
 		UniqueLock lck(m_mutex);
 		return m_queue.empty();
 	}
-	void stop(){
+	void stop() NO_THREAD_SAFETY_ANALYSIS{
 		m_needStop.store(true);
-		{
-			UniqueLock lck(m_mutex);
-			m_notFull.notify_all();
-		}
-		{
-			UniqueLock lck(m_mutex);
-			m_notEmpty.notify_all();
-		}
+		m_notFull.notify_all();
+		m_notEmpty.notify_all();
 	}
 	void put(T&& x){
 		Add(std::forward<T>(x));
