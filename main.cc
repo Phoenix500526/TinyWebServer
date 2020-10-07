@@ -4,7 +4,7 @@
 
 using namespace std;
 
-AsyncLogging* g_asyncLog = NULL;
+AsyncLogging* g_asyncLog = nullptr;
 void asyncOutput(const char* msg, int len)
 {
   g_asyncLog->append(msg, len);

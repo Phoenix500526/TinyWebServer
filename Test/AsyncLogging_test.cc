@@ -11,7 +11,7 @@
 using namespace std;
 
 off_t kRollSize = 1024 * 1000 * 1000;
-AsyncLogging* g_asyncLog = NULL;
+AsyncLogging* g_asyncLog = nullptr;
 void asyncOutput(const char* msg, int len)
 {
   g_asyncLog->append(msg, len);
@@ -40,7 +40,7 @@ void bench(bool longLog)
     auto end = chrono::system_clock::now();
     cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << "microseconds" << endl;
     struct timespec ts = { 0, 500*1000*1000 };
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, nullptr);
   }
 }
 
