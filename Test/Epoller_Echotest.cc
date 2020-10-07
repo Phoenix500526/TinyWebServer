@@ -1,20 +1,20 @@
 #include "Net/Epoller.h"
+#include <fcntl.h>       // for nonblocking
+#include <netinet/in.h>  // for sockaddr_in
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>  // for 最大连接数需要setrlimit
+#include <sys/socket.h>    // for socket
 #include <sys/types.h>
-#include <sys/socket.h>         // for socket
-#include <netinet/in.h>         // for sockaddr_in
-#include <fcntl.h>              // for nonblocking
-#include <sys/resource.h>       // for 最大连接数需要setrlimit
 
-#define MAXEPOLL 10000         
-#define MAXLINE  1024
-#define PORT     6000
-#define MAXBACK  1000
+#define MAXEPOLL 10000
+#define MAXLINE 1024
+#define PORT 6000
+#define MAXBACK 1000
 
 int setnonblocking(int fd) {
-    if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFD,0) | O_NONBLOCK) == -1) {
+    if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0) | O_NONBLOCK) == -1) {
         printf("set blocking error: %d\n", errno);
         return -1;
     }
@@ -25,13 +25,13 @@ int main() {
     int listen_fd;
     int conn_fd;
     ssize_t nread, nwrite;
-    int cur_fds;     // 当前已经存在的fd数量
-    int wait_fds;    
+    int cur_fds;  // 当前已经存在的fd数量
+    int wait_fds;
     int i;
     struct sockaddr_in servaddr;
     struct sockaddr_in cliaddr;
 
-    struct rlimit rlt; // 设置连接数所需
+    struct rlimit rlt;  // 设置连接数所需
     char buf[MAXLINE];
     socklen_t len = sizeof(struct sockaddr_in);
 
@@ -39,7 +39,7 @@ int main() {
 
     // 1.设置每个进程允许打开的最大文件数
     rlt.rlim_max = rlt.rlim_cur = MAXEPOLL;
-    if(setrlimit(RLIMIT_NOFILE, &rlt) == -1) {
+    if (setrlimit(RLIMIT_NOFILE, &rlt) == -1) {
         printf("setrlimit error : %d\n", errno);
         exit(EXIT_FAILURE);
     }
@@ -66,7 +66,8 @@ int main() {
     }
 
     // 5. 绑定
-    if (bind(listen_fd, (struct sockaddr*)&servaddr, sizeof(struct sockaddr)) == -1) {
+    if (bind(listen_fd, (struct sockaddr *)&servaddr,
+             sizeof(struct sockaddr)) == -1) {
         printf("bind error : %d ...\n", errno);
         exit(EXIT_FAILURE);
     }
@@ -85,14 +86,15 @@ int main() {
     cur_fds = 1;
 
     while (true) {
-        if ((wait_fds = epoller.Wait()) == -1) { 
+        if ((wait_fds = epoller.Wait()) == -1) {
             printf("epoll_wait error : %d\n", errno);
             exit(EXIT_FAILURE);
         }
 
         for (i = 0; i < wait_fds; ++i) {
             if (epoller.GetEventFd(i) == listen_fd && cur_fds < MAXEPOLL) {
-                if ((conn_fd = accept(listen_fd, (struct sockaddr *)&cliaddr, &len)) == -1) {
+                if ((conn_fd = accept(listen_fd, (struct sockaddr *)&cliaddr,
+                                      &len)) == -1) {
                     printf("accept error : %d\n", errno);
                     exit(EXIT_FAILURE);
                 }

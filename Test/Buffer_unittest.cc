@@ -1,16 +1,16 @@
 #include "Tools/Buffer.h"
 #include <gtest/gtest.h>
 
-class BufferTest : public ::testing::Test{
-};
+class BufferTest : public ::testing::Test {};
 
-
-
-TEST_F(BufferTest, AppendAndRetrieveTest){
+TEST_F(BufferTest, AppendAndRetrieveTest) {
     Buffer buf;
-    ASSERT_EQ(buf.ReadableBytes(), 0) << "error: ReadableBytes is " << buf.ReadableBytes();
-    ASSERT_EQ(buf.WritableBytes(), Buffer::kInitialSize) << "error: WritableBytes is " << buf.WritableBytes();
-    ASSERT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend) << "error: PrepenableBytes is " << buf.PrepenableBytes();
+    ASSERT_EQ(buf.ReadableBytes(), 0) << "error: ReadableBytes is "
+                                      << buf.ReadableBytes();
+    ASSERT_EQ(buf.WritableBytes(), Buffer::kInitialSize)
+        << "error: WritableBytes is " << buf.WritableBytes();
+    ASSERT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend)
+        << "error: PrepenableBytes is " << buf.PrepenableBytes();
 
     std::string str1(200, 'x');
     buf.Append(str1);
@@ -34,17 +34,22 @@ TEST_F(BufferTest, AppendAndRetrieveTest){
     const void* str3_ptr = str3.c_str() + 50;
     buf.Append(str3_ptr, 100);
     EXPECT_EQ(buf.ReadableBytes(), str1.size() - str2.size() + str3.size());
-    EXPECT_EQ(buf.WritableBytes(), Buffer::kInitialSize - str1.size() - str3.size());
+    EXPECT_EQ(buf.WritableBytes(),
+              Buffer::kInitialSize - str1.size() - str3.size());
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend + str2.size());
 
     buf.Retrieve(100);
-    EXPECT_EQ(buf.ReadableBytes(), str1.size() - str2.size() + str3.size() - 100);
-    EXPECT_EQ(buf.WritableBytes(), Buffer::kInitialSize - str1.size() - str3.size());
+    EXPECT_EQ(buf.ReadableBytes(),
+              str1.size() - str2.size() + str3.size() - 100);
+    EXPECT_EQ(buf.WritableBytes(),
+              Buffer::kInitialSize - str1.size() - str3.size());
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend + str2.size() + 100);
 
     buf.RetrieveUntil(buf.Peek() + 20);
-    EXPECT_EQ(buf.ReadableBytes(), str1.size() - str2.size() + str3.size() - 120);
-    EXPECT_EQ(buf.WritableBytes(), Buffer::kInitialSize - str1.size() - str3.size());
+    EXPECT_EQ(buf.ReadableBytes(),
+              str1.size() - str2.size() + str3.size() - 120);
+    EXPECT_EQ(buf.WritableBytes(),
+              Buffer::kInitialSize - str1.size() - str3.size());
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend + str2.size() + 120);
 
     buf.RetrieveUntil(buf.Peek() + buf.ReadableBytes());
@@ -53,8 +58,7 @@ TEST_F(BufferTest, AppendAndRetrieveTest){
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend);
 }
 
-
-TEST_F(BufferTest, PeekTest){
+TEST_F(BufferTest, PeekTest) {
     Buffer buf;
     std::string str1(200, 'x');
     buf.Append(str1);
@@ -62,7 +66,7 @@ TEST_F(BufferTest, PeekTest){
     EXPECT_EQ(str1, str2);
 }
 
-TEST_F(BufferTest, GrowTest){
+TEST_F(BufferTest, GrowTest) {
     Buffer buf;
     buf.Append(std::string(800, 'y'));
     EXPECT_EQ(buf.ReadableBytes(), 800);
@@ -70,15 +74,15 @@ TEST_F(BufferTest, GrowTest){
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend);
 
     buf.Append(std::string(800, 'z'));
-    size_t new_size = buf.WritableBytes() + buf.ReadableBytes() + buf.PrepenableBytes();
+    size_t new_size =
+        buf.WritableBytes() + buf.ReadableBytes() + buf.PrepenableBytes();
     EXPECT_EQ(buf.ReadableBytes(), 1600);
     EXPECT_EQ(buf.WritableBytes(), 0);
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend);
     EXPECT_EQ(new_size, 1600 + Buffer::kCheapPrepend);
-
 }
 
-TEST_F(BufferTest, InsideGrowTest){
+TEST_F(BufferTest, InsideGrowTest) {
     Buffer buf;
     buf.Append(std::string(1000, 'z'));
     EXPECT_EQ(buf.ReadableBytes(), 1000);
@@ -90,7 +94,7 @@ TEST_F(BufferTest, InsideGrowTest){
     EXPECT_EQ(buf.WritableBytes(), Buffer::kInitialSize - 1000);
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend + 500);
 
-    buf.Append(std::string(300,'x'));
+    buf.Append(std::string(300, 'x'));
     EXPECT_EQ(buf.ReadableBytes(), 800);
     EXPECT_EQ(buf.WritableBytes(), Buffer::kInitialSize - 800);
     EXPECT_EQ(buf.PrepenableBytes(), Buffer::kCheapPrepend);

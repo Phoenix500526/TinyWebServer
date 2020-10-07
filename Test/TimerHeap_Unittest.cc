@@ -1,71 +1,54 @@
-#include <gtest/gtest.h>
 #include "Timer/TimerHeap.h"
+#include <gtest/gtest.h>
 
 using namespace std;
 
-void func(){}
+void func() {}
 
-class TimerHeap_Derived: public TimerHeap
-{
+class TimerHeap_Derived : public TimerHeap {
 public:
-    TimerHeap_Derived(){}
-    ~TimerHeap_Derived(){}
-    vector<TimerNode>& getHeap(){
-        return TimerHeap::m_heap;
-    }
-    unordered_map<int, size_t>& getRef(){
-        return TimerHeap::m_ref;
-    }
-    void Swap(size_t i, size_t j){
-        TimerHeap::Swap(i, j);
-    }
-    void ShiftUp(size_t i){
-        TimerHeap::ShiftUp(i);
-    }
-    bool ShiftDown(size_t i){
-        return TimerHeap::ShiftDown(i);
-    }
-    void DelTimer(int timer_id){
-        TimerHeap::DelTimer(timer_id);
-    }
-    void AddTimer(int timer_id, int timeout, TimeoutCallBack const& cb){
+    TimerHeap_Derived() {}
+    ~TimerHeap_Derived() {}
+    vector<TimerNode>& getHeap() { return TimerHeap::m_heap; }
+    unordered_map<int, size_t>& getRef() { return TimerHeap::m_ref; }
+    void Swap(size_t i, size_t j) { TimerHeap::Swap(i, j); }
+    void ShiftUp(size_t i) { TimerHeap::ShiftUp(i); }
+    bool ShiftDown(size_t i) { return TimerHeap::ShiftDown(i); }
+    void DelTimer(int timer_id) { TimerHeap::DelTimer(timer_id); }
+    void AddTimer(int timer_id, int timeout, TimeoutCallBack const& cb) {
         TimerHeap::AddTimer(timer_id, timeout, cb);
     }
-    void AdjustTimer(int timer_id, int timeout){
+    void AdjustTimer(int timer_id, int timeout) {
         TimerHeap::AdjustTimer(timer_id, timeout);
     }
-    void Tick(){
-        TimerHeap::Tick();
-    }
+    void Tick() { TimerHeap::Tick(); }
 };
 
-
-class TimerHeap_Unittest:public ::testing::Test
-{
+class TimerHeap_Unittest : public ::testing::Test {
 protected:
     TimerHeap_Unittest()
-        :t0(0, Clock::now() + static_cast<MS>(5000000), func), 
-        t1(1, Clock::now() + static_cast<MS>(2000000), func),
-        t2(2, Clock::now() + static_cast<MS>(1000000), func), 
-        t3(3, Clock::now() + static_cast<MS>(4000000), func),
-        t4(4, Clock::now(), func), 
-        t5(5, Clock::now() + static_cast<MS>(3000000), func){
-            vector<TimerNode>& heap = Heap_.getHeap();
-            unordered_map<int, size_t>& ref = Heap_.getRef();
-            heap.push_back(t0);
-            ref[0] = 0;
-            heap.push_back(t1);
-            ref[1] = 1;
-            heap.push_back(t2);
-            ref[2] = 2;
-            heap.push_back(t3);
-            ref[3] = 3;
-            heap.push_back(t4);
-            ref[4] = 4;
-            heap.push_back(t5);
-            ref[5] = 5;
-        }
-    ~TimerHeap_Unittest(){}
+        : t0(0, Clock::now() + static_cast<MS>(5000000), func),
+          t1(1, Clock::now() + static_cast<MS>(2000000), func),
+          t2(2, Clock::now() + static_cast<MS>(1000000), func),
+          t3(3, Clock::now() + static_cast<MS>(4000000), func),
+          t4(4, Clock::now(), func),
+          t5(5, Clock::now() + static_cast<MS>(3000000), func) {
+        vector<TimerNode>& heap = Heap_.getHeap();
+        unordered_map<int, size_t>& ref = Heap_.getRef();
+        heap.push_back(t0);
+        ref[0] = 0;
+        heap.push_back(t1);
+        ref[1] = 1;
+        heap.push_back(t2);
+        ref[2] = 2;
+        heap.push_back(t3);
+        ref[3] = 3;
+        heap.push_back(t4);
+        ref[4] = 4;
+        heap.push_back(t5);
+        ref[5] = 5;
+    }
+    ~TimerHeap_Unittest() {}
     TimerHeap_Derived Heap_;
     TimerNode t0;
     TimerNode t1;
@@ -75,8 +58,7 @@ protected:
     TimerNode t5;
 };
 
-
-TEST_F(TimerHeap_Unittest, InitTest){
+TEST_F(TimerHeap_Unittest, InitTest) {
     EXPECT_EQ(t1 < t0, true);
     EXPECT_EQ(t2 < t1, true);
     EXPECT_EQ(t3 < t0, true);
@@ -84,8 +66,8 @@ TEST_F(TimerHeap_Unittest, InitTest){
     EXPECT_EQ(t5 < t3, true);
 }
 
-//Swap(t4,t5)
-TEST_F(TimerHeap_Unittest, SwapTest){
+// Swap(t4,t5)
+TEST_F(TimerHeap_Unittest, SwapTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     EXPECT_EQ(ref[4], 4);
@@ -99,8 +81,8 @@ TEST_F(TimerHeap_Unittest, SwapTest){
     EXPECT_EQ(heap[5].expires, t4.expires);
 }
 
-//ShiftUp(4)
-TEST_F(TimerHeap_Unittest, ShiftUpTest){
+// ShiftUp(4)
+TEST_F(TimerHeap_Unittest, ShiftUpTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     EXPECT_EQ(ref[4], 4);
@@ -124,8 +106,8 @@ TEST_F(TimerHeap_Unittest, ShiftUpTest){
     EXPECT_EQ(heap[5].expires, t5.expires);
 }
 
-//ShiftDown(0)
-TEST_F(TimerHeap_Unittest, ShiftDownTest){
+// ShiftDown(0)
+TEST_F(TimerHeap_Unittest, ShiftDownTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     EXPECT_EQ(ref[0], 0);
@@ -146,20 +128,20 @@ TEST_F(TimerHeap_Unittest, ShiftDownTest){
     EXPECT_EQ(heap[5].expires, t0.expires);
 }
 
-//DelTimer(0)
-TEST_F(TimerHeap_Unittest, DelTimerTest){
+// DelTimer(0)
+TEST_F(TimerHeap_Unittest, DelTimerTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     Heap_.DelTimer(5);
-    EXPECT_EQ(ref[0],0);
+    EXPECT_EQ(ref[0], 0);
     EXPECT_EQ(heap[0].expires, t0.expires);
-    EXPECT_EQ(ref[1],1);
+    EXPECT_EQ(ref[1], 1);
     EXPECT_EQ(heap[1].expires, t1.expires);
-    EXPECT_EQ(ref[2],2);
+    EXPECT_EQ(ref[2], 2);
     EXPECT_EQ(heap[2].expires, t2.expires);
-    EXPECT_EQ(ref[3],3);
+    EXPECT_EQ(ref[3], 3);
     EXPECT_EQ(heap[3].expires, t3.expires);
-    EXPECT_EQ(ref[4],4);
+    EXPECT_EQ(ref[4], 4);
     EXPECT_EQ(heap[4].expires, t4.expires);
     EXPECT_EQ(heap.size(), 5);
     EXPECT_EQ(ref.find(5) == ref.end(), true);
@@ -177,8 +159,7 @@ TEST_F(TimerHeap_Unittest, DelTimerTest){
     EXPECT_EQ(heap[3].expires, t3.expires);
 }
 
-
-TEST_F(TimerHeap_Unittest, AddTimerTest){
+TEST_F(TimerHeap_Unittest, AddTimerTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     Heap_.AddTimer(6, 1500, func);
@@ -193,36 +174,36 @@ TEST_F(TimerHeap_Unittest, AddTimerTest){
     EXPECT_EQ(ref[6], 0);
 }
 
-//AdjustTimer(4)
-TEST_F(TimerHeap_Unittest, AdjustTimerTest){
+// AdjustTimer(4)
+TEST_F(TimerHeap_Unittest, AdjustTimerTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     Heap_.AdjustTimer(4, 1500);
-    EXPECT_EQ(ref[0],1);
+    EXPECT_EQ(ref[0], 1);
     EXPECT_EQ(heap[1].expires, t0.expires);
-    EXPECT_EQ(ref[1],4);
+    EXPECT_EQ(ref[1], 4);
     EXPECT_EQ(heap[4].expires, t1.expires);
-    EXPECT_EQ(ref[2],2);
-    EXPECT_EQ(ref[3],3);
-    EXPECT_EQ(ref[4],0);
-    EXPECT_EQ(ref[5],5);
+    EXPECT_EQ(ref[2], 2);
+    EXPECT_EQ(ref[3], 3);
+    EXPECT_EQ(ref[4], 0);
+    EXPECT_EQ(ref[5], 5);
 }
 
-TEST_F(TimerHeap_Unittest, TickTest){
+TEST_F(TimerHeap_Unittest, TickTest) {
     unordered_map<int, size_t>& ref = Heap_.getRef();
     vector<TimerNode>& heap = Heap_.getHeap();
     Heap_.Tick();
-    EXPECT_EQ(ref[0],0);
+    EXPECT_EQ(ref[0], 0);
     EXPECT_EQ(heap[0].expires, t0.expires);
-    EXPECT_EQ(ref[1],1);
+    EXPECT_EQ(ref[1], 1);
     EXPECT_EQ(heap[1].expires, t1.expires);
-    EXPECT_EQ(ref[2],2);
+    EXPECT_EQ(ref[2], 2);
     EXPECT_EQ(heap[2].expires, t2.expires);
-    EXPECT_EQ(ref[3],3);
+    EXPECT_EQ(ref[3], 3);
     EXPECT_EQ(heap[3].expires, t3.expires);
-    EXPECT_EQ(ref[4],4);
+    EXPECT_EQ(ref[4], 4);
     EXPECT_EQ(heap[4].expires, t4.expires);
-    EXPECT_EQ(ref[5],5);
+    EXPECT_EQ(ref[5], 5);
     EXPECT_EQ(heap[5].expires, t5.expires);
     Heap_.ShiftUp(4);
     Heap_.Tick();

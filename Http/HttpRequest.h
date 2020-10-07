@@ -1,16 +1,16 @@
 #ifndef TINYWEBSERVER_HTTP_HTTPREQUEST_H
-#define TINYWEBSERVER_HTTP_HTTPREQUEST_H 
+#define TINYWEBSERVER_HTTP_HTTPREQUEST_H
 
+#include <mysql/mysql.h>
+#include <regex>
 #include <unordered_map>
 #include <unordered_set>
-#include <regex>
-#include <mysql/mysql.h>
 
-#include "Tools/Buffer.h"
 #include "Logger/Logger.h"
 #include "Pools/SqlConnectionPool.h"
+#include "Tools/Buffer.h"
 
-class HttpRequestBase{
+class HttpRequestBase {
 public:
     virtual void Init() = 0;
     virtual bool Parse(Buffer& buff) = 0;
@@ -21,22 +21,19 @@ public:
     virtual std::string version() const = 0;
     virtual std::string GetPost(const std::string& key) const = 0;
     virtual std::string GetPost(const char* key) const = 0;
-    virtual ~HttpRequestBase(){}
-};  
+    virtual ~HttpRequestBase() {}
+};
 
-
-class HttpRequest: public HttpRequestBase{
+class HttpRequest : public HttpRequestBase {
 public:
-    enum class PARSE_STATE
-    {
+    enum class PARSE_STATE {
         REQUEST_LINE,
         HEADERS,
         BODY,
-        FINISH,     
+        FINISH,
     };
 
-    enum class HTTP_CODE
-    {
+    enum class HTTP_CODE {
         NO_REQUEST = 0,
         GET_REQUEST,
         BAD_REQUEST,
@@ -45,10 +42,9 @@ public:
         FILE_REQUEST,
         INTERNAL_ERROR,
         CLOSED_CONNECTION,
-    };    
+    };
 
-    enum class LOGIN_STATUS
-    {
+    enum class LOGIN_STATUS {
         LOGIN_SUCCESS,
         NO_SUCH_USER,
         WRONG_PASSWD,
@@ -78,9 +74,7 @@ protected:
     std::unordered_map<std::string, std::string> m_post;
 
 public:
-    HttpRequest(){
-        Init();
-    }
+    HttpRequest() { Init(); }
     ~HttpRequest() = default;
     void Init() override;
     bool Parse(Buffer& buff) override;
@@ -91,9 +85,7 @@ public:
     std::string version() const override;
     std::string GetPost(const std::string& key) const override;
     std::string GetPost(const char* key) const override;
-    PARSE_STATE GetState()const{
-        return m_state;
-    }
+    PARSE_STATE GetState() const { return m_state; }
 };
 
 #endif

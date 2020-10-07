@@ -1,20 +1,22 @@
 #ifndef TINYWEBSERVER_HTTP_HTTPRESPONSE_H
 #define TINYWEBSERVER_HTTP_HTTPRESPONSE_H
 
+#include <fcntl.h>     // open
+#include <sys/mman.h>  // mmap, munmap
+#include <sys/stat.h>  // stat
+#include <unistd.h>    // close
 #include <unordered_map>
-#include <fcntl.h>       // open
-#include <unistd.h>      // close
-#include <sys/stat.h>    // stat
-#include <sys/mman.h>    // mmap, munmap
-#include "Tools/Buffer.h"
 #include "Logger/Logger.h"
+#include "Tools/Buffer.h"
 
-
-class HttpResponseBase{
+class HttpResponseBase {
 private:
-    virtual void Init_Impl(const std::string& srcDir, std::string& path, bool isKeepAlive, int code) = 0;
+    virtual void Init_Impl(const std::string& srcDir, std::string& path,
+                           bool isKeepAlive, int code) = 0;
+
 public:
-    void Init(const std::string& srcDir, std::string& path, bool isKeepAlive = false, int code = -1){
+    void Init(const std::string& srcDir, std::string& path,
+              bool isKeepAlive = false, int code = -1) {
         Init_Impl(srcDir, path, isKeepAlive, code);
     }
     virtual void UnmapFile() = 0;
@@ -23,18 +25,19 @@ public:
     virtual size_t FileLen() const = 0;
     virtual void ErrorContent(Buffer&, std::string) = 0;
     virtual int Code() const = 0;
-    virtual ~HttpResponseBase(){}
+    virtual ~HttpResponseBase() {}
 };
 
-
-
-class HttpResponse:public HttpResponseBase{   
+class HttpResponse : public HttpResponseBase {
 private:
-    void Init_Impl(const std::string& srcDir, std::string& path, bool isKeepAlive, int code) override;    
+    void Init_Impl(const std::string& srcDir, std::string& path,
+                   bool isKeepAlive, int code) override;
+
 public:
     HttpResponse();
     ~HttpResponse();
-    void Init(const std::string& srcDir, std::string& path, bool isKeepAlive = false, int code = -1){
+    void Init(const std::string& srcDir, std::string& path,
+              bool isKeepAlive = false, int code = -1) {
         Init_Impl(srcDir, path, isKeepAlive, code);
     }
     void UnmapFile() override;
@@ -46,9 +49,9 @@ public:
     int Code() const override;
 
 protected:
-    void AddStateLine(Buffer &buff);
-    void AddHeader(Buffer &buff);
-    void AddContent(Buffer &buff);
+    void AddStateLine(Buffer& buff);
+    void AddHeader(Buffer& buff);
+    void AddContent(Buffer& buff);
 
     void ErrorHtml();
 
@@ -60,8 +63,8 @@ protected:
 
     std::string m_path;
     std::string m_srcDir;
-    
-    char* m_mmFile; 
+
+    char* m_mmFile;
     struct stat m_mmFileStat;
 
     static const std::unordered_map<std::string, std::string> SUFFIX_TYPE;
