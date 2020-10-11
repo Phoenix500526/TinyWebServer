@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 
 project(TinyWebServer)
 
-set(CMAKE_CXX_STANDARD 11)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
+
+set(CMAKE_CXX_STANDARD 11)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
@@ -25,7 +28,6 @@ add_compile_options(
  )
 
 
-add_subdirectory(3rd-party/google-test)
 enable_testing()
 
 add_subdirectory(Logger)

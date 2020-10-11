@@ -1,11 +1,16 @@
 #include "Config.h"
 #include <gtest/gtest.h>
+#include <unistd.h>
+#include <iostream>
 
 class ConfigTest : public ::testing::Test {
 protected:
     void SetUp() override {
         try {
-            conf = new Config("Config_unittest.ini");
+            std::string config_file(get_current_dir_name());
+            config_file += "/../bin/Config_unittest.ini";
+            std::cout << config_file << std::endl;
+            conf = new Config(config_file.c_str());
         } catch (File_Not_Found& e) {
             ASSERT_NE(e.what(), nullptr) << "Config_unittest Open Failed !!";
         }

@@ -1,5 +1,8 @@
 project(Unit_Test)
 
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/Test)
+#message(WARN ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 # AsyncLogging_test
 add_executable(AsyncLogging_test AsyncLogging_test.cc)
 
@@ -15,13 +18,17 @@ add_executable(ConfigUnitTest Config_unittest.cc ${CMAKE_SOURCE_DIR}/Config.cc)
 target_include_directories(ConfigUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 
 target_link_libraries(ConfigUnitTest
-    GTest::GTest 
-    GTest::Main
+    ${CONAN_LIBS}
 )
 
 add_custom_command(TARGET ConfigUnitTest POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E 
 	copy ${CMAKE_CURRENT_SOURCE_DIR}/Config_unittest.ini $<TARGET_FILE_DIR:ConfigUnitTest>)
+
+set_target_properties( ConfigUnitTest
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build/Test"
+)
 
 add_test(NAME ConfigUnitTest COMMAND ConfigUnitTest)
 
@@ -34,8 +41,7 @@ target_link_libraries(ThreadPool_test PRIVATE Threads::Threads)
 add_executable(BufferUnitTest Buffer_unittest.cc ${CMAKE_SOURCE_DIR}/Tools/Buffer.cc)
 target_include_directories(BufferUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(BufferUnitTest
-    GTest::GTest
-    GTest::Main
+    ${CONAN_LIBS}
 )
 add_test(NAME BufferUnitTest COMMAND BufferUnitTest)
 
@@ -43,9 +49,7 @@ add_test(NAME BufferUnitTest COMMAND BufferUnitTest)
 add_executable(HttpConnUnitTest HttpConn_Unittest.cc )
 target_include_directories(HttpConnUnitTest PUBLIC ${CMAKE_SOURCE_DIR} ${gmock_SOURCE_DIR}/include)
 target_link_libraries(HttpConnUnitTest
-    GTest::GTest
-    GTest::Main
-    GMock::GMock
+    ${CONAN_LIBS}
     Http::lib
 )
 add_test(NAME HttpConnUnitTest COMMAND HttpConnUnitTest)
@@ -54,8 +58,7 @@ add_test(NAME HttpConnUnitTest COMMAND HttpConnUnitTest)
 add_executable(HttpRequestUnitTest HttpRequest_Unittest.cc)
 target_include_directories(HttpRequestUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(HttpRequestUnitTest
-    GTest::GTest
-    GTest::Main
+    ${CONAN_LIBS}
     Http::lib
 )
 add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
@@ -65,8 +68,7 @@ add_test(NAME HttpRequestUnitTest COMMAND HttpRequestUnitTest)
 add_executable(HttpResponseUnitTest HttpResponse_Unittest.cc )
 target_include_directories(HttpResponseUnitTest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(HttpResponseUnitTest
-    GTest::GTest
-    GTest::Main
+    ${CONAN_LIBS}
     Http::lib
 )
 add_test(NAME HttpResponseUnitTest COMMAND HttpResponseUnitTest)
@@ -85,8 +87,7 @@ add_custom_command(TARGET HttpResponseFileTest POST_BUILD
 add_executable(TimerHeapUnittest TimerHeap_Unittest.cc)
 target_include_directories(TimerHeapUnittest PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(TimerHeapUnittest 
-    GTest::GTest
-    GTest::Main
+    ${CONAN_LIBS}
     Timer::lib
 )
 add_test(NAME TimerHeapUnittest COMMAND TimerHeapUnittest)
