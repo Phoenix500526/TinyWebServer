@@ -9,7 +9,7 @@
 * Pools: 包含了连接池和线程池以及数据库访问对象 DAO
 * Tools: 包含了 Buffer，CountDownLatch，Mutex，Condition 等同步工具
 * Net: 包含 WebServer 和 Poller 
-整个 TinyWebServer 利用 IO 复用技术及线程池实现了高并发的 Reactor 模型，采用 cmake 进行构建，开发的过程当中采用了良好的 OO 设计，符合 TDD 流程，使用 googletest 测试框架进行了单元测试，Mock 测试以及对应模块的功能测试。最终程序经 webbench 测试可实现上万并发
+整个 TinyWebServer 利用 IO 复用技术及线程池实现了高并发的 Reactor 模型，采用 cmake 进行构建，利用 conan 进行包管理。开发的过程当中采用了良好的 OO 设计，符合 TDD 流程，使用 googletest 测试框架进行了单元测试，Mock 测试以及对应模块的功能测试。最终程序经 webbench 测试可实现上万并发
 
 
 ## 源码树及描述信息
@@ -100,20 +100,30 @@
 * C++ 11
 * MySql 
 * clang version 3.8.0-2ubuntu4 或 gcc version 5.4.0 20160609 
+* conan
 
 ## 编译方法
+编译之前需要确保安装了相应的依赖
+```shell
+# 安装 conan
+$ sudo pip install conan
+# 安装 clang, mysql 相关
+$ sudo apt-get intall clang-3.8 mysql-server mysql-client
+```
+
 ```shell
 $ mkdir build
 $ cd build/
+# 利用 conan 安装 gtest 源码
+$ conan install .. --build missing -s compiler=clang -s compiler.version=3.8 -s compiler.libcxx=libstdc++11 -s build_type=Release
 # 编译 Debug 版本
-$ cmake .. -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_BUILD_TYPE=Release
+$ cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
 # 编译 Release 版本
-$ cmake .. -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_BUILD_TYPE=Release
+$ cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
+$ make install -j4
 # 可先对代码进行单元测试
 $ make test
-$ make install -j4
 ```
-注：初次编译时需要下载 googletest 源码，由于某些你懂的原因下载速度比较慢。**后期如果需要重新编译，可以保留 build 目录下的 3rd-party，以避免反复下载 googletest 源码**
 
 ## 环境配置
 ```shell
