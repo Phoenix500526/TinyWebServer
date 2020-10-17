@@ -2,12 +2,12 @@
 #define TINYWEBSERVER_TOOLS_NOCOPYABLE
 
 class nocopyable {
-public:
-    nocopyable(const nocopyable&) = delete;
-    nocopyable& operator=(const nocopyable&) = delete;
+ public:
+  nocopyable(const nocopyable&) = delete;
+  nocopyable& operator=(const nocopyable&) = delete;
 
-protected:
-    nocopyable() = default;
-    ~nocopyable() = default;
+ protected:
+  nocopyable() = default;
+  ~nocopyable() = default;
 };
 #endif

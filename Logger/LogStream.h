@@ -22,102 +22,102 @@ const int kLargeBuffer = 4000 * 1000;
 // 是一个不可拷贝的类，其中构造和析构函数是受保护类型，而拷贝构造与拷贝赋值是删除的
 template <size_t N>
 class FixedBuffer : nocopyable {
-private:
-    char m_data[N];
-    char* m_current;
-    const char* end() const { return m_data + sizeof m_data; }
+ private:
+  char m_data[N];
+  char* m_current;
+  const char* end() const { return m_data + sizeof m_data; }
 
-public:
-    FixedBuffer() : m_current(m_data) {}
-    const char* data() const { return m_data; }
-    int length() const { return static_cast<int>(m_current - m_data); }
-    char* current() const { return m_current; }
-    int remainSpace() { return static_cast<int>(end() - m_current); }
-    void reset() { m_current = m_data; }
-    void bzero() { memset(m_data, 0, sizeof m_data); }
-    void add(size_t len) { m_current += len; }
-    void append(const char* data, size_t len) {
-        if (static_cast<size_t>(remainSpace()) >= len) {
-            memcpy(m_current, data, len);
-            m_current += len;
-        }
+ public:
+  FixedBuffer() : m_current(m_data) {}
+  const char* data() const { return m_data; }
+  int length() const { return static_cast<int>(m_current - m_data); }
+  char* current() const { return m_current; }
+  int remainSpace() { return static_cast<int>(end() - m_current); }
+  void reset() { m_current = m_data; }
+  void bzero() { memset(m_data, 0, sizeof m_data); }
+  void add(size_t len) { m_current += len; }
+  void append(const char* data, size_t len) {
+    if (static_cast<size_t>(remainSpace()) >= len) {
+      memcpy(m_current, data, len);
+      m_current += len;
     }
-    std::string toString() const { return std::string(m_data, length()); }
+  }
+  std::string toString() const { return std::string(m_data, length()); }
 };
 
 class LogStream : nocopyable {
-public:
-    typedef FixedBuffer<kSmallBuffer> Buffer;
+ public:
+  typedef FixedBuffer<kSmallBuffer> Buffer;
 
-private:
-    Buffer m_buffer;
-    static const int kNumericSize = 32;
-    template <typename T>
-    void formatInteger(T val);
+ private:
+  Buffer m_buffer;
+  static const int kNumericSize = 32;
+  template <typename T>
+  void formatInteger(T val);
 
-public:
-    void append(const char* buf, size_t len) { m_buffer.append(buf, len); }
-    void reset() { m_buffer.reset(); }
-    const Buffer& buffer() const { return m_buffer; }
-    LogStream& operator<<(bool val) {
-        m_buffer.append(val ? "true  " : "false ", 6);
-        return *this;
-    }
-    LogStream& operator<<(char val) {
-        m_buffer.append(&val, 1);
-        return *this;
-    }
+ public:
+  void append(const char* buf, size_t len) { m_buffer.append(buf, len); }
+  void reset() { m_buffer.reset(); }
+  const Buffer& buffer() const { return m_buffer; }
+  LogStream& operator<<(bool val) {
+    m_buffer.append(val ? "true  " : "false ", 6);
+    return *this;
+  }
+  LogStream& operator<<(char val) {
+    m_buffer.append(&val, 1);
+    return *this;
+  }
 
-    LogStream& operator<<(short val);
-    LogStream& operator<<(unsigned short val);
-    LogStream& operator<<(int val);
-    LogStream& operator<<(unsigned int val);
-    LogStream& operator<<(long val);
-    LogStream& operator<<(unsigned long val);
-    LogStream& operator<<(long long val);
-    LogStream& operator<<(unsigned long long val);
+  LogStream& operator<<(short val);
+  LogStream& operator<<(unsigned short val);
+  LogStream& operator<<(int val);
+  LogStream& operator<<(unsigned int val);
+  LogStream& operator<<(long val);
+  LogStream& operator<<(unsigned long val);
+  LogStream& operator<<(long long val);
+  LogStream& operator<<(unsigned long long val);
 
-    LogStream& operator<<(float val) {
-        (*this) << static_cast<double>(val);
-        return *this;
-    }
-    LogStream& operator<<(double val);
+  LogStream& operator<<(float val) {
+    (*this) << static_cast<double>(val);
+    return *this;
+  }
+  LogStream& operator<<(double val);
 
-    LogStream& operator<<(char* p_str) {
-        if (p_str) {
-            m_buffer.append(p_str, strlen(p_str));
-        } else {
-            m_buffer.append("(nullptr)", 9);
-        }
-        return *this;
+  LogStream& operator<<(char* p_str) {
+    if (p_str) {
+      m_buffer.append(p_str, strlen(p_str));
+    } else {
+      m_buffer.append("(nullptr)", 9);
     }
-    LogStream& operator<<(const char* p_str) {
-        return operator<<(const_cast<char*>(p_str));
-    }
-    LogStream& operator<<(const std::string& str) {
-        return operator<<(const_cast<char*>(str.c_str()));
-    }
-    LogStream& operator<<(std::string& str) {
-        m_buffer.append(str.c_str(), str.size());
-        return *this;
-    }
+    return *this;
+  }
+  LogStream& operator<<(const char* p_str) {
+    return operator<<(const_cast<char*>(p_str));
+  }
+  LogStream& operator<<(const std::string& str) {
+    return operator<<(const_cast<char*>(str.c_str()));
+  }
+  LogStream& operator<<(std::string& str) {
+    m_buffer.append(str.c_str(), str.size());
+    return *this;
+  }
 };
 
 class Fmt {
-private:
-    char m_data[32];
-    int m_len;
+ private:
+  char m_data[32];
+  int m_len;
 
-public:
-    template <typename T>
-    Fmt(const char* fmt, T val);
-    const char* data() const { return m_data; }
-    int length() const { return m_len; }
+ public:
+  template <typename T>
+  Fmt(const char* fmt, T val);
+  const char* data() const { return m_data; }
+  int length() const { return m_len; }
 };
 
 inline LogStream& operator<<(LogStream& ls, Fmt fmt) {
-    ls.append(fmt.data(), fmt.length());
-    return ls;
+  ls.append(fmt.data(), fmt.length());
+  return ls;
 }
 
 #endif

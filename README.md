@@ -123,6 +123,8 @@ $ cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_T
 $ make install -j4
 # 可先对代码进行单元测试
 $ make test
+# 格式化代码，要确保安装了 clang-format-3.8 及以上版本, 安装命令为 sudo apt-get install clang-format-3.8
+$ make clang-format
 ```
 
 ## 环境配置
